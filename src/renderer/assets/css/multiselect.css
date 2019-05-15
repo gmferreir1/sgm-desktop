@@ -1,0 +1,45 @@
+
+.multiselect {
+  padding: 0px 2px 2px 2px !important;
+  min-height: 20px;
+  min-width: 100% !important;
+  border-radius: 0px !important;
+  background: #ffffff !important;
+}
+
+.multiselect-selected-text {
+  float: left !important;
+  margin-left: 5px !important;
+}
+
+.multiselect .caret {
+  float: right !important;
+  margin-top: 10px !important;
+}
+
+.multiselect-container {
+  width: 100% !important;
+}
+
+.multiselect-selected-text {
+  margin-top: 5px !important;
+}
+
+
+
+.dropdown-menu>.active>a,
+.dropdown-menu>.active>a:hover,
+.dropdown-menu>.active>a:focus {
+  color: #fff;
+  text-decoration: none;
+  background-color: #967ADC;
+  outline: 0;
+}
+
+.dropdown-menu>li>a {
+  padding: 3px 30px;
+}
+
+.multiselect-container > li {
+  height: 30px !important;
+}

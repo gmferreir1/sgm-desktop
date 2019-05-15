@@ -1,0 +1,273 @@
+.content {
+  min-height: 250px;
+  padding: 0px 6px 6px 6px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/**
+ * altera a cor do side bar
+ */
+.skin-blue .wrapper,
+.skin-blue .main-sidebar,
+.skin-blue .left-side {
+  /*
+   background-color: #530082 !important;
+   */
+  background-color: #40364d !important;
+}
+
+/**
+  * altera a cor da navbar
+  */
+.skin-blue .main-header .navbar {
+  background-color: #e98531;
+}
+
+.fixed .main-header {
+  height: 30px !important;
+}
+
+.main-header .navbar {
+  min-height: 35px !important;
+}
+
+.skin-blue .main-header .logo {
+  background-color: #40364d;
+  color: #ffffff;
+  border-bottom: 0 solid transparent;
+}
+
+.menu-title-sidebar {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.skin-blue .main-header li.user-header {
+  background-color: #40364d;
+}
+
+.btn-primary {
+  background-color: #967adc;
+  border-color: #967adc;
+  font-size: 14px;
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+}
+
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary.hover {
+  background-color: #967adc;
+}
+
+.error {
+  color: red;
+}
+
+.has-warning {
+  border-color: #f39c12;
+  box-shadow: none;
+}
+
+.has-warning-select {
+  border: 1px solid #f39c12;
+}
+
+.box-title-up {
+  text-transform: uppercase;
+  font-size: 15px !important;
+  font-weight: bold;
+}
+
+.box-header {
+  padding-bottom: 0px !important;
+}
+
+.box.box-primary {
+  border-top-color: #e98531;
+}
+
+.box.box-purple {
+  border-top-color: #967adc;
+}
+
+.table {
+  font-size: 12px;
+}
+
+/*
+  * modals
+  */
+@media (min-width: 768px) {
+  .modal-xl {
+    max-width: 99% !important;
+  }
+}
+
+/*
+ * modals
+ */
+@media (min-width: 768px) {
+  .modal-md {
+    width: 80%;
+  }
+}
+
+/*
+ * modals
+ */
+@media (min-width: 200px) {
+  .modal-sm {
+    width: 50% !important;
+  }
+}
+
+.tableFixHead {
+  overflow-y: auto;
+  max-height: calc(100vh - 340px) !important;
+}
+
+.tableFixHead table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.tableFixHead th,
+.tableFixHead td {
+  padding: 8px 16px;
+}
+
+.tableFixHead th {
+  position: sticky;
+  top: 0;
+  background: rgba(65, 54, 78, 0.86);
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.tableFixHead a {
+  color: inherit;
+}
+
+tbody>tr>td {
+  text-transform: uppercase !important;
+}
+
+.div-120 {
+  width: 120px;
+}
+
+.div-140 {
+  width: 140px;
+}
+
+.div-160 {
+  width: 160px;
+}
+
+.credit {
+  color: green;
+}
+
+.debit {
+  color: red;
+}
+
+.position-alert {
+  position: absolute;
+  top: 0px;
+  z-index: 99999;
+  width: 100%;
+  left: 0px;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+.text-table {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/** cores status da reserva **/
+.status-total {
+  color: #000000;
+}
+.status-reserve {
+  color: #000000;
+}
+.status-documentation {
+  color: blue;
+}
+.status-analyzing {
+  color: green;
+}
+.status-register {
+  color: darkgreen;
+}
+.status-pending {
+  color: orange;
+}
+.status-signed {
+  color: darkblue;
+}
+.status-signed-with-pending {
+  color: rgb(4, 4, 56);
+}
+.status-final-activities {
+  color: rgb(0, 0, 22);
+}
+.status-canceled {
+  color: red;
+}
+
+.status-resolved {
+  color: green;
+}
+
+label {
+  font-weight: normal;
+}
+
+.historic_list p {
+  margin-bottom: 0px !important;
+}
+
+/* sweet alert */
+.swal-footer {
+  background-color: rgb(245, 248, 250);
+  margin-top: 32px;
+  border-top: 1px solid #e9eef1;
+  overflow: hidden;
+}
+
+.swal-button--confirm {
+  padding: 7px 50px;
+  border-radius: 2px;
+  font-size: 12px;
+  border: none;
+}
+
+.swal-button {
+  padding: 7px 50px;
+}
+
+.swal-overlay--show-modal,
+.swal-modal {
+  animation: none !important;
+}
+
+::-webkit-scrollbar {
+  width: 0.2em;
+  height: 0.2em;
+}
+::-webkit-scrollbar-button {
+  background: #ccc;
+}
+::-webkit-scrollbar-track-piece {
+  background: #888;
+}
+::-webkit-scrollbar-thumb {
+  background: #eee;
+}
