@@ -1,26 +1,38 @@
 <template>
   <div>
-    <form-reserve @openModalShowImmobile="data => data_modal_show_immobile = { data } "/>
+    <form-reserve
+      @opeModalHistoricReserve="reserve_id => data_modal_historic_reserve = { reserve_id }"
+      @openModalCancelReserve="reserve_id => data_modal_cancel_reserve = { reserve_id }"
+      :refreshDataReserve="refresh_data_reserve"
+    />
 
-    <!-- modal lista os imoveis encontrados na API(SICADI) -->
-    <modal-show-immobile :dataModal="data_modal_show_immobile" />
-    <!-- // modal lista os imoveis encontrados na API(SICADI) -->
+    <!-- MODAL HISTORICOS RESERVA -->
+    <modal-historic-reserve :dataModal="data_modal_historic_reserve"/>
+    <!-- / MODAL HISTÓRICOS RESERVA -->
+
+    <!-- MODAL PARA O CANCELAMENTO DA RESERVA -->
+    <modal-cancel-reserve :dataModal="data_modal_cancel_reserve" @refreshDataReserve="refresh_data_reserve = !refresh_data_reserve"/>
+    <!-- MODAL PARA O CANCELAMENTO DA RESERVA -->
   </div>
 </template>
 
 <script>
 import FormReserve from "../components/FormReserve";
-import ModalShowImmobile from "@/modules/sicadi/ModalShowImmobile";
+import ModalHistoricReserve from "../components/ModalHistoricReserve";
+import ModalCancelReserve from "../components/ModalCancelReserve";
 
 export default {
   name: "CreateOrEdit",
   components: {
     FormReserve,
-    ModalShowImmobile
+    ModalHistoricReserve,
+    ModalCancelReserve
   },
   data() {
     return {
-      data_modal_show_immobile: {}
+      data_modal_historic_reserve: {},
+      data_modal_cancel_reserve: {},
+      refresh_data_reserve: false
     };
   }
 };

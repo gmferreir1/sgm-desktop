@@ -1,52 +1,62 @@
 <template>
   <div>
     <div id="modalCancelReserve" class="modal" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-md">
-        <div class="modal-content">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content roundbox boxshadow">
           <!-- modal header -->
-          <modal-header @closeModal="closeModal" :title="title_modal"/>
+          <modal-header @closeModal="closeModal" title="CANCELAMENTO DA RESERVA"/>
           <!-- / modal header -->
 
-          <div class="modal-body" style="padding: 10px !important">
-            <div class="row">
+          <div class="modal-body" style="padding: 5px !important">
+            <div class="row" v-if="loading_reasons_cancel">
               <div class="col-md-12">
-                <label>Informe o motivo pelo qual deseja cancelar a reserva</label>
+                <!-- loader -->
+                <div class="loader"></div>
+                <!-- / loader -->
+              </div>
+            </div>
+            <div class="row" v-if="!loading_reasons_cancel">
+              <div class="col-md-12">
+                <label>Informe o motivo (obrigatório)</label>
                 <select class="form-control input-sm has-warning" v-model="form.id_reason_cancel">
                   <option value>Informe</option>
                   <option
                     :value="list.id"
-                    v-for="(list, index) in reasons_cancel"
-                    :key="index"
+                    v-for="list in select.reasons"
                   >{{ list.reason.toUpperCase() }}</option>
                 </select>
               </div>
             </div>
-
-            <div class="row" style="margin-top: 10px;">
+            <div class="row" style="margin-top: 10px;" v-if="!loading_reasons_cancel">
               <div class="col-md-12">
-                <label>Alguma observação (opcional)</label>
+                <label>Observações extra (não obrigatório)</label>
                 <textarea
-                  class="form-control input-sm"
-                  rows="5"
+                  class="form-control"
+                  cols="4"
+                  rows="10"
                   v-model="form.observation"
-                  :disabled="!form.id_reason_cancel"
+                  placeholder="Digite aqui as informações adicionais"
                 ></textarea>
               </div>
             </div>
-
-            <div class="row" style="margin-top: 10px;">
-              <div class="col-md-12">
-                <button
-                  class="button btn btn-sm btn-danger"
-                  :disabled="!form.id_reason_cancel"
-                  @click="cancelReserve"
-                >
-                  <span class="fa fa-check"></span>
-                  Salvar Dados
-                </button>
-              </div>
-            </div>
           </div>
+          <modal-footer>
+            <!-- loader -->
+            <div class="loader pull-right" style="margin-right: 100px;" v-if="loading"></div>
+            <!-- / loader -->
+
+            <button
+              class="button btn btn-sm btn-danger"
+              @click="cancelReserve"
+              :disabled="!form.id_reason_cancel"
+              v-if="!loading"
+            >Salvar Dados</button>
+            <button
+              class="button btn btn-sm btn-default"
+              @click="closeModal"
+              v-if="!loading"
+            >Fechar Janela</button>
+          </modal-footer>
         </div>
       </div>
     </div>
@@ -54,62 +64,76 @@
 </template>
 
 <script>
-import ModalHeader from "../../../../components/ModalHeader";
-import { mapActions } from "vuex";
+import ModalHeader from "@/components/ModalHeader";
+import ModalFooter from "@/components/ModalFooter";
+import Editor from "@/components/Editor";
+import NotFound from "@/components/NotFound";
+import { dateFormat } from "@/util/dateTime";
 
 export default {
-  name: "ModalClientData",
+  name: "ModalCancelReserve",
   props: ["dataModal"],
   components: {
-    ModalHeader
+    ModalHeader,
+    ModalFooter
   },
   data() {
     return {
-      reasons_cancel: [],
-      reserve_data: {},
-      title_modal: "",
+      loading: false,
+      loading_reasons_cancel: true,
       form: {
         id_reason_cancel: "",
         observation: ""
+      },
+      select: {
+        reasons: []
       }
     };
   },
   methods: {
-    ...mapActions("Reason", ["getAllReasons"]),
+    dateFormat,
     openModal() {
       $("#modalCancelReserve").modal({
         keyboard: false,
         backdrop: "static"
       });
     },
-    getAllReasonsCancel() {
-      const queryParams = {
-        params: {
-          module_name: "register_reserve",
-          type_reason: "reason_cancel_contract"
-        }
-      };
-
-      this.getAllReasons(queryParams)
+    /** Busca os motivos de cancelamento da reserva */
+    getReasonsCancel() {
+      http
+        .get("register-sector/reserve/query/reasons-cancel")
         .then(results => {
-          this.reasons_cancel = results.data;
+          this.select.reasons = results.data;
         })
-        .catch(err => {});
+        .catch(err => {})
+        .finally(() =>
+          setTimeout(() => (this.loading_reasons_cancel = false), 300)
+        );
     },
     cancelReserve() {
-      this.$bus.$emit("openLoading");
+      this.loading = true;
       http
         .put(
-          `register/reserve/cancel-reserve/${this.reserve_data.id}`,
+          `register-sector/reserve/${this.dataModal.reserve_id}/cancel-reserve`,
           this.form
         )
         .then(result => {
           _notification.success();
-          this.$emit("updateFormReserve");
-          this.closeModal();
-          setTimeout(() => this.$bus.$emit("closeLoading"), 300);
+          this.$emit("refreshDataReserve");
         })
-        .catch(err => this.$bus.$emit("closeLoading"));
+        .catch(err => {})
+        .finally(() => {
+          setTimeout(() => {
+            this.loading = false;
+            this.closeModal();
+          }, 400);
+        });
+    },
+    cleanForm() {
+      this.form = {
+        id_reason_cancel: "",
+        observation: ""
+      };
     },
     closeModal() {
       $("#modalCancelReserve").modal("hide");
@@ -117,22 +141,18 @@ export default {
   },
   watch: {
     dataModal() {
-      this.form = {
-        id_reason_cancel: "",
-        observation: ""
-      };
-
-      this.reserve_data = this.dataModal.data;
-      this.title_modal = `CANCELAMENTO DA RESERVA ${this.reserve_data.code_reserve}/${this.reserve_data.year_reserve}`;
-      this.getAllReasonsCancel();
+      this.loading_reasons_cancel = true;
+      this.cleanForm();
       this.openModal();
+      this.getReasonsCancel();
     }
   }
 };
 </script>
 
+
 <style scoped>
-tbody > tr > td {
-  text-transform: uppercase !important;
+.historic_list {
+  text-transform: none !important;
 }
 </style>

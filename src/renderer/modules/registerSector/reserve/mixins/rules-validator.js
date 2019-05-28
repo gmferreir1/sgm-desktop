@@ -2,9 +2,32 @@ import cpf from "gerador-validador-cpf";
 
 export default {
   validators: {
-    "form.crm_code": function(value) {
-      if (!this.form.code) {
-        return Validator.value(value).required("Obrigatório");
+    "form.owner_code": function(value) {
+      return Validator.value(value).required("Obrigatório");
+    },
+    "form.owner_name": function(value) {
+      return Validator.value(value).required("Obrigatório");
+    },
+    "form.tenant_code": function(value) {
+      if (
+        this.form.status === "as" ||
+        this.form.status === "ap" ||
+        this.form.status === "af"
+      ) {
+        if (this.form.crm_code) {
+          return Validator.value(value).required("Obrigatório");
+        }
+      }
+    },
+    "form.tenant_name": function(value) {
+      if (
+        this.form.status === "as" ||
+        this.form.status === "ap" ||
+        this.form.status === "af"
+      ) {
+        if (this.form.crm_code) {
+          return Validator.value(value).required("Obrigatório");
+        }
       }
     },
     "form.immobile_code": function(value) {

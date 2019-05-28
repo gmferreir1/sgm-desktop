@@ -1,3 +1,4 @@
+import data from "@/data/dataSelect";
 export default {
   select: {
     status: [
@@ -50,6 +51,11 @@ export default {
       { name: "108 Meses", value: 108 },
       { name: "120 Meses", value: 120 },
       { name: "132 Meses", value: 132 }
-    ]
+    ],
+    types_immobile: [],
+    responsible_register_sector: [],
+    responsible_reception: [],
+    users: [],
+    states: data.select.states
   }
 };

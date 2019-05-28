@@ -5,7 +5,7 @@
   "description": "An electron-vue project",
   "license": null,
   "main": "./dist/electron/main.js",
-  "repository": "https://github.com/gmferreir1/mwd-restaurant-electron",
+  "repository": "https://github.com/gmferreir1/sgm-desktop",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
@@ -107,6 +107,7 @@
     "vue-router": "^3.0.1",
     "vue-the-mask": "^0.11.1",
     "vue2-editor": "^2.6.6",
+    "vuejs-paginate": "^2.1.0",
     "vuex": "^3.0.1",
     "vuex-electron": "^1.0.0",
     "webpack": "^4.25.1"

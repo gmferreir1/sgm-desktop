@@ -132,7 +132,7 @@ import { moneyFormat } from "../../../../util/string";
 
 export default {
   name: "PanelResults",
-  props: ["totalQuantity"],
+  props: ["totalQuantity", "perPage"],
   data() {
     return {
       toggle: true,
@@ -150,7 +150,7 @@ export default {
   },
   watch: {
     totalQuantity() {
-      this.total_quantity = this.totalQuantity.data;
+      this.total_quantity = this.totalQuantity;
     }
   }
 };

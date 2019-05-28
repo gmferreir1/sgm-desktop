@@ -2,10 +2,10 @@
   <div>
     <aside class="main-sidebar sidenav">
       <section class="sidebar">
-        <ul class="sidebar-menu" data-widget="tree">
+        <ul class="sidebar-menu" >
           <li class="treeview">
             <a href="#" @click.prevent>
-              <img :src="images.contract">
+              <img :src="icons.folder">
               <span class="menu-title-sidebar">CADASTRO</span>
             </a>
             <ul class="treeview-menu">
@@ -22,7 +22,7 @@
               </li>
             </ul>
           </li>
-
+          <!--
           <li class="treeview">
             <a href="#" @click.prevent>
               <img :src="images.termination">
@@ -41,6 +41,7 @@
               </li>
             </ul>
           </li>
+          -->
         </ul>
       </section>
     </aside>
@@ -52,10 +53,8 @@ export default {
   name: "SideBar",
   data() {
     return {
-      images: {
-        profile: require("@/assets/images/profile.png"),
-        contract: require("@/assets/icons/contract.png"),
-        termination: require("@/assets/icons/termination.png")
+      icons: {
+        folder: require("@/assets/icons/form.png"),
       }
     };
   }
@@ -78,6 +77,6 @@ export default {
 
 .skin-blue .sidebar-menu > li > a {
   border-left: 3px solid transparent;
-  padding-left: 5px !important;
+  padding-left: 4px !important;
 }
 </style>

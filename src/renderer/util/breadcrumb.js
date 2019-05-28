@@ -162,4 +162,21 @@ export default routeName => {
       }
     ];
   }
+  
+  if (routeName === "registerSector_reserve_edit") {
+    return [
+      {
+        name: "Dashboard",
+        link: "dashboard"
+      },
+      {
+        name: "Reservas no Sistema",
+        link: "registerSector_reserve_list"
+      },
+      {
+        name: "Edição de Reserva",
+        link: "registerSector_reserve_edit"
+      }
+    ];
+  }
 };

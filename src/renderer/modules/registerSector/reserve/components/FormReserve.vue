@@ -2,15 +2,20 @@
   <div>
     <div class="row">
       <div class="col-md-12">
-        <div class="box box-primary">
+        <div class="box box-primary" style="margin-bottom: 5px;">
           <div class="box-header with-border" style="padding-top: 3px">
             <h3 class="box-title" style="padding-bottom: 10px; padding-top: 5px;">
-              <img :src="images.house" style="position: absolute; top: 1px;"/>
+              <img :src="images.house" style="position: absolute; top: 1px;">
               <span style="margin-left: 35px;">FORMULÁRIO RESERVA DE IMÓVEL</span>
             </h3>
 
             <!-- button -->
             <div class="pull-right">
+              <button class="button btn btn-sm btn-danger" @click="submitForm" :disabled="blockTotalChanges">
+                <span class="fa fa-check"></span>
+                Salvar Dados
+              </button>
+
               <div class="btn-group">
                 <button
                   type="button"
@@ -28,22 +33,24 @@
                   <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu pull-right" role="menu">
-                  <li v-if="form.status !== 'c' ">
-                    <a href="#" @click.prevent="printRecord">Ficha Reserva</a>
+                  <li v-if="form.id">
+                    <a
+                      href="#"
+                      @click.prevent="$emit('opeModalHistoricReserve', form.id)"
+                    >Históricos da reserva</a>
                   </li>
-                  <li>
-                    <router-link :to="{name: 'registerSector_reserve_create'}">Nova Reserva</router-link>
+                  <li v-if="!disabledCancelReserve">
+                    <a href="#" @click.prevent="printRecord">Imprimir ficha de reserva</a>
                   </li>
-                  <li class="divider" v-if="form.id && data_before_update.status !== 'c'"></li>
-                  <li v-if="form.id && data_before_update.status !== 'c'">
-                    <a href="#" @click.prevent="openModalCancelReserve">Cancelar Reserva</a>
+                  <li v-if="!disabledCancelReserve">
+                    <a href="#" @click.prevent="$emit('openModalCancelReserve', form.id)">Cancelar reserva</a>
                   </li>
                 </ul>
               </div>
             </div>
             <!-- / button -->
           </div>
-         
+
           <div class="box-body" style="padding-top: 0px;">
             <div class="row" style="margin-top: 10px;">
               <div class="col-md-2 div-160">
@@ -53,11 +60,60 @@
                   class="form-control input-sm has-warning"
                   v-model="form.crm_code"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
-                <div class="error">{{ validation.firstError('form.crm_code') }}</div>
               </div>
             </div>
 
+            <!-- DADOS PROPRIETÁRIO -->
+            <div class="row" style="margin-top: 10px;">
+              <div class="col-md-7">
+                <span style="font-weight: bold; color: #E98531">DADOS DO PROPRIETÁRIO</span>
+                <hr style="margin-top:0px; margin-bottom: 10px;">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2 div-160">
+                <label>Código Proprietário</label>
+                <input
+                  type="text"
+                  class="form-control input-sm has-warning"
+                  v-model="form.owner_code"
+                  @keypress.enter="getClientData(form.owner_code, 'owner')"
+                  autocomplete="off"
+                  :disabled="disabledChangeContractData"
+                >
+                <div class="error">{{ validation.firstError('form.owner_code') }}</div>
+              </div>
+
+              <div
+                class="col-md-1"
+                style="width: 30px; padding-left: 0px;; margin-top: 25px;"
+              >
+                <div class="loader" v-if="loading_owner_data"></div>
+                <a
+                  href="#"
+                  @click.prevent="getClientData(form.owner_code, 'owner')"
+                  v-if="!loading_owner_data && form.owner_code"
+                >
+                  <img :src="images.search">
+                </a>
+              </div>
+
+              <div class="col-md-4">
+                <label>Nome do Proprietário</label>
+                <input
+                  type="text"
+                  class="form-control input-sm has-warning"
+                  v-model="form.owner_name"
+                  autocomplete="off"
+                  :disabled="disabledChangeContractData"
+                >
+                <div class="error">{{ validation.firstError('form.owner_name') }}</div>
+              </div>
+            </div>
+            <!-- / DADOS DO PROPRIETÁRIO -->
 
             <!-- DADOS DO IMOVEL -->
             <div class="row" style="margin-top: 10px;">
@@ -68,17 +124,31 @@
             </div>
 
             <div class="row">
-              <div class="col-md-2 div-140">
+              <div class="col-md-2 div-160">
                 <label>Código Imóvel</label>
                 <input
                   type="text"
                   class="form-control input-sm has-warning"
                   v-model="form.immobile_code"
-                  @keypress.enter="queryImmobileData"
-                  @keydown.tab="queryImmobileData"
+                  @keypress.enter="getImmobileData"
+                  :disabled="disabledAction"
                   autocomplete="off"
                 >
                 <div class="error">{{ validation.firstError('form.immobile_code') }}</div>
+              </div>
+
+              <div
+                class="col-md-1"
+                style="width: 30px; padding-left: 0px;; margin-top: 25px;"
+              >
+                <div class="loader" v-if="loading_immobile_data"></div>
+                <a
+                  href="#"
+                  @click.prevent="getImmobileData"
+                  v-if="!loading_immobile_data && form.immobile_code"
+                >
+                  <img :src="images.search">
+                </a>
               </div>
 
               <div class="col-md-3">
@@ -88,6 +158,7 @@
                   class="form-control input-sm has-warning"
                   v-model="form.address"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
                 <div class="error">{{ validation.firstError('form.address') }}</div>
               </div>
@@ -99,6 +170,7 @@
                   class="form-control input-sm has-warning"
                   v-model="form.neighborhood"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
                 <div class="error">{{ validation.firstError('form.neighborhood') }}</div>
               </div>
@@ -108,6 +180,7 @@
                 <select
                   class="form-control input-sm has-warning"
                   v-model="form.type_location"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value>Informe</option>
                   <option value="c">COMERCIAL</option>
@@ -121,13 +194,14 @@
                 <select
                   class="form-control input-sm has-warning"
                   v-model="form.immobile_type"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value>Informe</option>
                   <option
-                    :value="list.type_immobile_id"
+                    :value="list.value"
                     v-for="(list, index) in select.types_immobile"
                     :key="index"
-                  >{{ list.name_type_immobile.toUpperCase() }}</option>
+                  >{{ list.name.toUpperCase() }}</option>
                 </select>
                 <div class="error">{{ validation.firstError('form.immobile_type') }}</div>
               </div>
@@ -140,6 +214,7 @@
                   class="form-control input-sm has-warning"
                   v-model="form.value"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 />
                 <div class="error">{{ validation.firstError('form.value') }}</div>
               </div>
@@ -150,6 +225,7 @@
                   class="form-control input-sm has-warning"
                   v-model="form.value_negotiated"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 />
                 <div class="error">{{ validation.firstError('form.value_negotiated') }}</div>
               </div>
@@ -171,6 +247,7 @@
                   class="form-control input-sm has-warning"
                   v-model="form.date_reserve"
                   autocomplete="off"
+                  :disabled="form.id"
                 />
                 <div class="error">{{ validation.firstError('form.date_reserve') }}</div>
               </div>
@@ -181,14 +258,19 @@
                   class="form-control input-sm has-warning"
                   v-model="form.prevision"
                   autocomplete="off"
+                  :disabled="blockTotalChanges"
                 />
                 <div class="error">{{ validation.firstError('form.prevision') }}</div>
               </div>
 
               <div class="col-md-2">
                 <label>Status</label>
-                <select class="form-control input-sm has-warning" v-model="form.status" :disabled="!form.id">
-                  <option value="">Informe</option>
+                <select
+                  class="form-control input-sm has-warning"
+                  v-model="form.status"
+                  :disabled="!form.id || blockTotalChanges"
+                >
+                  <option value>Informe</option>
                   <option :value="list.value" v-for="list in select.status">{{ list.name }}</option>
                 </select>
                 <div class="error">{{ validation.firstError('form.status') }}</div>
@@ -205,6 +287,7 @@
                   :multiple="false"
                   :search="true"
                   :maxHeight="300"
+                  :disable="disabledChangeContractData"
                   class="has-warning-select"
                   @value="value => form.attendant_register = value"
                 />
@@ -220,6 +303,7 @@
                   :multiple="false"
                   :search="true"
                   :maxHeight="300"
+                  :disable="disabledChangeContractData"
                   class="has-warning-select"
                   @value="value => form.attendant_reception = value"
                 />
@@ -229,23 +313,63 @@
             <!-- // FIM DADOS DA RESERVA -->
 
             <!-- DADOS DO CONTRATO CELEBRADO -->
-            <div class="row" style="margin-top: 20px;" v-if="showContractCelebratedData">
+            <div class="row" style="margin-top: 20px;" v-if="reserveSigned">
               <div class="col-md-7">
                 <span style="font-weight: bold; color: #E98531">DADOS DO CONTRATO</span>
                 <hr style="margin-top:0px; margin-bottom: 10px;">
               </div>
             </div>
 
-            <div class="row" v-if="showContractCelebratedData">
+            <div class="row" v-if="reserveSigned">
+              <div class="col-md-2 div-160">
+                <label>Código Inquilino</label>
+                <input
+                  type="text"
+                  class="form-control input-sm has-warning"
+                  v-model="form.tenant_code"
+                  @keypress.enter="getClientData(form.tenant_code, 'tenant')"
+                  autocomplete="off"
+                  :disabled="disabledChangeContractData"
+                >
+                <div class="error">{{ validation.firstError('form.tenant_code') }}</div>
+              </div>
+
+              <div
+                class="col-md-1"
+                style="width: 30px; padding-left: 0px;; margin-top: 25px;"
+              >
+                <div class="loader" v-if="loading_tenant_data"></div>
+                <a
+                  href="#"
+                  @click.prevent="getClientData(form.tenant_code, 'tenant')"
+                  v-if="!loading_tenant_data && form.tenant_code"
+                >
+                  <img :src="images.search">
+                </a>
+              </div>
+
+              <div class="col-md-4">
+                <label>Nome do Inquilino</label>
+                <input
+                  type="text"
+                  class="form-control input-sm has-warning"
+                  v-model="form.tenant_name"
+                  autocomplete="off"
+                  :disabled="disabledChangeContractData"
+                >
+                <div class="error">{{ validation.firstError('form.tenant_name') }}</div>
+              </div>
+            </div>
+
+            <div class="row" v-if="reserveSigned" style="margin-top: 10px;">
               <div class="col-md-2 div-160">
                 <label>Contrato</label>
                 <input
                   type="text"
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.contract"
-                  @keypress.enter="checkContractExists"
-                  @keydown.tab="checkContractExists"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
                 <div class="error">{{ validation.firstError('form.contract_data.contract') }}</div>
               </div>
@@ -257,6 +381,7 @@
                   id="date_init_contract"
                   v-model="form.contract_data.date_init_contract"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 />
                 <div
                   class="error"
@@ -269,6 +394,7 @@
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.due_date_rent"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 />
                 <div class="error">{{ validation.firstError('form.contract_data.due_date_rent') }}</div>
               </div>
@@ -278,6 +404,7 @@
                 <select
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.deadline"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value>Informe</option>
                   <option :value="list.value" v-for="list in select.deadline">{{ list.name }}</option>
@@ -293,6 +420,7 @@
                   v-model="form.contract_data.delivery_key"
                   id="delivery_key"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 />
                 <div class="error">{{ validation.firstError('form.contract_data.delivery_key') }}</div>
               </div>
@@ -302,6 +430,7 @@
                 <select
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.loyalty_discount"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value>Informe</option>
                   <option value="y">Sim</option>
@@ -317,6 +446,7 @@
                 <select
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.ticket"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value>Informe</option>
                   <option value="y">Sim</option>
@@ -326,12 +456,13 @@
               </div>
             </div>
 
-            <div class="row" style="margin-top: 10px;" v-if="status_final">
+            <div class="row" style="margin-top: 10px;" v-if="reserveSigned">
               <div class="col-md-2">
                 <label>Paga Aluguel Para Quem ?</label>
                 <select
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.observation"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value>Informe</option>
                   <option value="1º aluguel">1º Aluguel</option>
@@ -350,6 +481,7 @@
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.other_observation"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
                 <div
                   class="error"
@@ -363,6 +495,7 @@
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.origin_city"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
                 <div class="error">{{ validation.firstError('form.contract_data.origin_city') }}</div>
               </div>
@@ -372,6 +505,7 @@
                 <select
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.origin_state"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value>Informe</option>
                   <option
@@ -388,6 +522,7 @@
                 <select
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.finality"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value>Informe</option>
                   <option value="c">Comercio</option>
@@ -399,7 +534,7 @@
               </div>
             </div>
 
-            <div class="row" style="margin-top: 10px;" v-if="status_final">
+            <div class="row" style="margin-top: 10px;" v-if="reserveSigned">
               <div class="col-md-2 div-120">
                 <label>Taxa Adm %</label>
                 <input
@@ -407,6 +542,7 @@
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.taxa"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
                 <div class="error">{{ validation.firstError('form.contract_data.taxa') }}</div>
               </div>
@@ -416,6 +552,7 @@
                 <select
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.tx_contract"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value>Informe</option>
                   <option value="y">Sim</option>
@@ -429,6 +566,7 @@
                 <select
                   class="form-control input-sm has-warning"
                   v-model="form.contract_data.bank_expense"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value>Informe</option>
                   <option value="y">Sim</option>
@@ -452,6 +590,7 @@
                 <select
                   class="form-control input-sm has-warning"
                   v-model="form.type_client"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value="pf">Fisíca</option>
                   <option value="pj">Jurídica</option>
@@ -466,8 +605,7 @@
                   :mask="['###.###.###-##']"
                   placeholder="som. números"
                   v-model="form.client_cpf"
-                  @keypress.enter.native="getClientData"
-                  @keydown.tab.native="getClientData"
+                  :disabled="disabledChangeContractData"
                 />
                 <div class="error">{{ validation.firstError('form.client_cpf') }}</div>
               </div>
@@ -479,8 +617,7 @@
                   :mask="['##.###.###/####-##']"
                   placeholder="som. números"
                   v-model="form.client_cnpj"
-                  @keypress.enter.native="getClientData"
-                  @keydown.tab.native="getClientData"
+                  :disabled="disabledChangeContractData"
                 />
               </div>
 
@@ -491,6 +628,7 @@
                   class="form-control input-sm has-warning"
                   v-model="form.client_name"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
                 <div class="error">{{ validation.firstError('form.client_name') }}</div>
               </div>
@@ -502,6 +640,7 @@
                   class="form-control input-sm border-warning"
                   v-model="form.client_rg"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
               </div>
             </div>
@@ -514,6 +653,7 @@
                   class="form-control input-sm"
                   v-model="form.client_profession"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
               </div>
 
@@ -524,6 +664,7 @@
                   class="form-control input-sm"
                   v-model="form.client_company"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
               </div>
             </div>
@@ -535,9 +676,24 @@
                   class="form-control input-sm"
                   :mask="'#####-###'"
                   v-model="form.client_zip_code"
-                  @keypress.enter.native="queryZipCode"
-                  placeholder="tecle enter consulta cep"
+                  placeholder="CEP + enter realiza consulta"
+                  @keypress.enter.native="queryZipCode(form.client_zip_code)"
+                  :disabled="disabledChangeContractData"
                 />
+              </div>
+
+              <div
+                class="col-md-1"
+                style="width: 30px; padding-left: 0px;; margin-top: 25px;"
+              >
+                <div class="loader" v-if="loading_query_zip_code_data"></div>
+                <a
+                  href="#"
+                  @click.prevent="queryZipCode(form.client_zip_code)"
+                  v-if="!loading_query_zip_code_data && form.client_zip_code"
+                >
+                  <img :src="images.search">
+                </a>
               </div>
 
               <div class="col-md-3">
@@ -548,6 +704,7 @@
                   id="client_address"
                   v-model="form.client_address"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
               </div>
 
@@ -558,6 +715,7 @@
                   class="form-control input-sm"
                   v-model="form.client_neighborhood"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
               </div>
 
@@ -568,6 +726,7 @@
                   class="form-control input-sm"
                   v-model="form.client_city"
                   autocomplete="off"
+                  :disabled="disabledChangeContractData"
                 >
               </div>
 
@@ -576,6 +735,7 @@
                 <select
                   class="form-control input-sm"
                   v-model="form.client_state"
+                  :disabled="disabledChangeContractData"
                 >
                   <option value>Informe</option>
                   <option
@@ -595,6 +755,7 @@
                   :mask="['(##) ####-####', '(##) #####-####']"
                   v-model="form.client_phone_01"
                   placeholder="som. números"
+                  :disabled="disabledChangeContractData"
                 />
                 <div class="error">{{ validation.firstError('form.client_phone_01') }}</div>
               </div>
@@ -605,6 +766,7 @@
                   :mask="['(##) ####-####', '(##) #####-####']"
                   v-model="form.client_phone_02"
                   placeholder="som. números"
+                  :disabled="disabledChangeContractData"
                 />
               </div>
               <div class="col-md-2 div-180">
@@ -614,6 +776,7 @@
                   :mask="['(##) ####-####', '(##) #####-####']"
                   v-model="form.client_phone_03"
                   placeholder="som. números"
+                  :disabled="disabledChangeContractData"
                 />
               </div>
               <div class="col-md-3">
@@ -622,6 +785,7 @@
                   type="text"
                   class="form-control input-sm"
                   v-model="form.client_email"
+                  :disabled="disabledChangeContractData"
                 >
               </div>
             </div>
@@ -629,276 +793,36 @@
 
             <div class="row" style="margin-top: 10px;">
               <div class="col-md-12">
-                <button
-                  class="button btn btn-sm btn-danger"
-                  @click="submitForm"
-                >
+                <button class="button btn btn-sm btn-danger" @click="submitForm" :disabled="blockTotalChanges">
                   <span class="fa fa-check"></span>
                   Salvar Dados
                 </button>
-               
-                <button
-                  class="button btn btn-sm btn-default"
-                  @click="submitForm"
-                >
-                  Cancelar
-                </button>
+
+                <router-link :to="{name: 'registerSector_reserve_list'}" class="button btn btn-sm btn-default">Cancelar Dados</router-link>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <required/>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!--
-    <historic @historic="historic => this.form.historic = historic" :disabled="blockTotal"/>
-      -->
   </div>
 </template>
 
 <script>
-import cpf from "gerador-validador-cpf";
-import { mapActions } from "vuex";
-import rulesValidation from "../mixins/rules-validator";
-import dataSelect from "@/data/dataSelect";
-import { dateFormat } from "@/util/dateTime";
-import { getDataUserLogged } from "@/util/checkIsLogged";
-import deletePrint from "@/mixins/deletePrint";
-import { toUpperCase } from "@/util/string";
-
-import data from "../data";
-import dataForm from "../mixins/dataForm"
+import dataForm from "../mixins/data-form";
+import rulesValidator from "../mixins/rules-validator";
 import DatePicker from "@/components/DatePicker";
 import MultiSelect from "@/components/MultiSelect";
-import Historic from "./HistoricReserve";
-
+import Required from "@/components/Required";
 export default {
   name: "FormReserve",
-  props: ["refreshForm"],
-  mixins: [rulesValidation, deletePrint, dataForm],
-  components: {
-    DatePicker,
-    MultiSelect,
-    Historic
-  },
-  data() {
-    return {
-      images: {
-        house: require("@/assets/icons/house.png")
-      },
-      data_before_update: {
-        status: ""
-      },
-      select: {
-        users: [],
-        states:  dataSelect.select.states,
-        status: data.select.status,
-        deadline: data.select.deadline,
-        types_immobile: []
-      },
-      status_final: false,
-      confirm_end_reserve: false
-    };
-  },
-  methods: {
-    ...mapActions("AdminUser", ["getAllUsers"]),
-    ...mapActions("RegisterReserve", [
-      "createReserve",
-      "getReserve",
-      "updateReserve"
-    ]),
-    dateFormat,
-    getDataUserLogged,
-    toUpperCase,
-    /**
-     * Consulta os usuários cadastrados no sistema
-     */
-    async getUsers() {
-      return this.getAllUsers()
-        .then(results => {
-          const usersForSelect = results.data.map(user => {
-            return {
-              name: `${user.name.toUpperCase()} ${user.last_name.toUpperCase()}`,
-              value: user.id
-            };
-          });
-          const collection = collect(usersForSelect);
-          this.select.users = collection.sortBy("name").all();
-
-          // retorna o proximo atendente
-          if (this.$route.name === "registerSector_reserve_create") {
-            this.getNextAttendance();
-            const dataUserLogged = this.getDataUserLogged();
-            // seta o responsável pela recepção o usuário logado no momento
-            this.form.attendant_reception = dataUserLogged.id;
-          }
-        })
-        .catch(err => {});
-    },
-    /**
-     * Retorna o proximo atendente
-     */
-    getNextAttendance() {
-
-    },
-    /** Consulta os tipos de imoveis cadastrados no sistema */
-    async getTypesImmobile() {
-      return http.get("register-sector/reserve/query/types-immobile")
-        .then(results => {
-          this.select.types_immobile = results.data;
-        }).catch(err => {})
-    },
-    /** Consulta dados do imovel pelo código */
-    queryImmobileData() {
-      if (this.form.immobile_code.length < 2) return;
-      this.$bus.$emit("openLoading");
-      const queryParams = {
-        params: {
-          type_query: "per_code",
-          code: this.form.immobile_code
-        }
-      }
-
-      http.get("register-sector/reserve/query/immobile-data", queryParams)
-        .then(result => {
-
-          const data = result.data;
-          if (data.length === 1) {
-            /** seta os dados direto no form */
-            this.setFormData(data[0]);
-          } 
-          if(data.length > 1) {
-            /** abre a modal para seleção do imovel  */
-            this.$emit("openModalShowImmobile", data);
-          }
-
-        }).catch(err => {})
-        .finally(() => setTimeout(() => this.$bus.$emit("closeLoading"), 300) )
-     
-    },
-    /**
-     * Seta os dados vindo da consulta do API(SICADI)
-     */
-    setFormData(data) {
-      const dataForm = toUpperCase(data, ["type_location"]);
-      this.form.immobile_code = dataForm.immobile_code;
-      this.form.address = dataForm.address;
-      this.form.neighborhood = dataForm.neighborhood;
-      this.form.type_location = dataForm.type_location ? (dataForm.type_location === "re" ? "r" : "c") : "";
-      this.form.immobile_type = dataForm.type_immobile_id ? dataForm.type_immobile_id : "";
-      this.form.value = dataForm.value_rent;
-    },
-    /** Consulta os dados do cliente pelo CPF ou pelo CNPJ */
-    getClientData() {
-      const params = {};
-      if (this.form.type_client === "pf" && cpf.validate(this.form.client_cpf)) {
-        params.type_client = this.form.type_client;
-        params.value = this.form.client_cpf;
-      }
-
-      if (this.form.type_client === "pj" && this.form.client_cnpj.length === 14) {
-        params.type_client = this.form.type_client;
-        params.value = this.form.client_cnpj;
-      }
-
-      if (params.value) {
-        const queryParams = {
-          params 
-        }
-        http.get("register-sector/reserve/query/client-data", queryParams)
-          .then(result => {
-            const clientData = toUpperCase(result.data, ["client_state", "type_client"]);
-            if (!clientData) return;
-            this.form.type_client = clientData.type_client;
-            this.form.client_name = clientData.client_name;
-            this.form.client_cpf = clientData.client_cpf;
-            this.form.client_cnpj = clientData.client_cnpj;
-            this.form.client_rg = clientData.client_rg;
-            this.form.client_profession = clientData.client_profession;
-            this.form.client_company = clientData.client_company;
-            this.form.client_address = clientData.client_address;
-            this.form.client_zip_code = clientData.client_zip_code;
-            this.form.client_neighborhood = clientData.client_neighborhood;
-            this.form.client_city = clientData.client_city;
-            this.form.client_state = clientData.client_state;
-            this.form.client_phone_01 = clientData.client_phone_01;
-            this.form.client_phone_02 = clientData.client_phone_02;
-            this.form.client_phone_03 = clientData.client_phone_03;
-            this.form.client_email = clientData.client_email;
-          })
-          .catch(err => {})
-      }
-    },
-    /** Consulta o CEP */
-    queryZipCode() {
-      if (this.form.client_zip_code.length !== 8) return;
-      const queryParams = {
-        params: {
-          zip_code: this.form.client_zip_code
-        }
-      };
-
-      http.get("query-zip-code", queryParams)
-        .then(result => {
-          const dataForm = result.data;
-          this.form.client_address = dataForm.logradouro.toUpperCase();
-          this.form.client_neighborhood = dataForm.bairro.toUpperCase();
-          this.form.client_city = dataForm.localidade.toUpperCase();
-          this.form.client_state = dataForm.uf;
-          this.setFocus("client_address");
-        }).catch(err => {})
-    },
-    /**
-     * Verifica se o contrato existe no sistema
-     */
-    checkContractExists() {
-      
-    },
-    setObservationData(dataEdit) {
-
-    },
-    openModalCancelReserve() {
-      
-    },
-    /**
-     * Impressão da ficha de reserva
-     */
-    printRecord() {
-      
-    },
-    setFocus(id) {
-      document.getElementById(id).focus();
-    },
-    cleanForm() {
-     
-    }
-  },
-  watch: {
-    
-  },
-  computed: {
-    showContractCelebratedData() {
-
-      if (this.data_before_update.status === "as" || this.data_before_update.status === "ap" || this.data_before_update.status == "af") {
-        return true;
-      }
-
-    }
-  },
-  mounted() {
-    this.$bus.$emit("openLoading");
-
-    (async () => {
-      await this.getUsers();
-      await this.getTypesImmobile();
-      setTimeout(() => this.$bus.$emit("closeLoading"), 300);
-    })()
-
-    /** Escuta evento disparado pela modal de imoveis da API(SICADI) */
-    this.$bus.$on("Sicadi::exportData", data => {
-      this.setFormData(data);
-    })
-  }
+  mixins: [dataForm, rulesValidator],
+  components: { DatePicker, MultiSelect, Required }
 };
 </script>
 

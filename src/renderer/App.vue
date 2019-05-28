@@ -95,7 +95,7 @@ export default {
       if (this.$route.name != "auth") {
         this.hide_components = false;
         this.styleObject = {
-          "margin-left": "50px !important"
+          "margin-left": "45px !important"
         };
       } else {
         this.styleObject = {
@@ -114,7 +114,7 @@ export default {
 
     if (this.$route.name !== "auth") {
       this.styleObject = {
-        "margin-left": "50px !important"
+        "margin-left": "45px !important"
       };
 
       this.hide_components = false;

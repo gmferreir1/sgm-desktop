@@ -13,14 +13,14 @@ export default {
   },
   methods: {
     sort(sortBy = null, sortOrder = "asc", useSorted = true) {
-
-      
       this.toggle_sort = sortOrder;
 
       const collection = collect(this.data_list.data);
 
       if (useSorted) {
-        this.data_sort.sort_order = !sortOrder ? this.data_sort.sort_order: sortOrder;
+        this.data_sort.sort_order = !sortOrder
+          ? this.data_sort.sort_order
+          : sortOrder;
         this.data_sort.sort_by = !sortBy ? this.data_sort.sort_by : sortBy;
       }
 

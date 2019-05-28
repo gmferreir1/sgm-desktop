@@ -19,6 +19,7 @@
               v-if="index !== (array_links.length - 1)"
               :to="{name: list.link}"
             >
+              &nbsp
               <i class="fa fa-list-alt"></i>
               {{list.name}}
             </router-link>
@@ -84,7 +85,6 @@ export default {
   top: 5px;
   height: 25px !important;
   border: none !important;
-  font-weight: bold;
 }
 
 .ol-breadcrumb > li + li:before {
@@ -96,5 +96,9 @@ export default {
   list-style: none;
   padding-left: 10px;
   font-size: 11px;
+}
+
+ol > li > a {
+  color: #989898
 }
 </style>

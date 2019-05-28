@@ -18,6 +18,33 @@
 }
 
 /**
+ * Diminui o tamanho da sidebar
+ */
+.sidebar-mini.sidebar-collapse .main-sidebar {
+  width: 45px !important;
+}
+
+.sidebar-mini.sidebar-collapse .main-header .logo {
+  width: 40px !important;
+}
+
+.sidebar-mini.sidebar-collapse .main-header .navbar {
+  margin-left: 45px !important;
+}
+
+.sidebar-mini:not(.sidebar-mini-expand-feature).sidebar-collapse
+  .sidebar-menu
+  > li:hover
+  > a
+  > span:not(.pull-right),
+.sidebar-mini:not(.sidebar-mini-expand-feature).sidebar-collapse
+  .sidebar-menu
+  > li:hover
+  > .treeview-menu {
+  left: 45px;
+}
+
+/**
   * altera a cor da navbar
   */
 .skin-blue .main-header .navbar {
@@ -101,7 +128,8 @@
   */
 @media (min-width: 768px) {
   .modal-xl {
-    max-width: 99% !important;
+    min-width: 99% !important;
+    width: 99%;
   }
 }
 
@@ -121,6 +149,20 @@
   .modal-sm {
     width: 50% !important;
   }
+}
+
+/**
+ * modals round
+ */
+.boxshadow {
+  -moz-box-shadow: 3px 3px 5px #535353;
+  -webkit-box-shadow: 3px 3px 5px #535353;
+  box-shadow: 3px 3px 5px #535353;
+}
+.roundbox {
+  -moz-border-radius: 6px 6px 6px 6px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px 6px 6px 6px;
 }
 
 .tableFixHead {
@@ -150,7 +192,7 @@
   color: inherit;
 }
 
-tbody>tr>td {
+tbody > tr > td {
   text-transform: uppercase !important;
 }
 
@@ -270,4 +312,18 @@ label {
 }
 ::-webkit-scrollbar-thumb {
   background: #eee;
+}
+
+.pagination {
+  display: inline-block;
+  padding-left: 0;
+  margin: 5px 0px 0px 0px;
+  border-radius: 4px;
+}
+
+/** checkbox do select **/
+.radio,
+.checkbox {
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
 }
