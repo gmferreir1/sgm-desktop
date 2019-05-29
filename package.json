@@ -1,8 +1,8 @@
 {
-  "name": "mwd-sigem",
-  "version": "0.0.2",
+  "name": "sgm-sigem",
+  "version": "0.0.3",
   "author": "Guilherme Ferreira <gmferreir1@gmail.com>",
-  "description": "An electron-vue project",
+  "description": "SGM master",
   "license": null,
   "main": "./dist/electron/main.js",
   "repository": "https://github.com/gmferreir1/sgm-desktop",
