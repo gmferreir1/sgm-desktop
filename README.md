@@ -1,6 +1,6 @@
 # my-web-day-electron-boilerplate
 
-> An electron-vue project
+> SGM - Sistema de Gestão Master Imóveis
 
 #### Build Setup
 

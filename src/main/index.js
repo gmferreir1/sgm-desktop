@@ -94,6 +94,7 @@ app.on("activate", () => {
  */
 
 import { autoUpdater } from 'electron-updater'
+import { parse } from "url";
 
 ipcMain.on('checkUpdates', (event, data) => {
 
@@ -111,9 +112,8 @@ ipcMain.on('checkUpdates', (event, data) => {
   })
 
   autoUpdater.on('download-progress', (progressObj) => {
-    let log_message = "Download speed: " + progressObj.bytesPerSecond;
-    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    let log_message = 'Downloaded ' + parseInt(progressObj.percent) + '%';
+    log_message = log_message + ' (' + parseFloat((progressObj.transferred).toFixed(2)) + "/" + parseFloat((progressObj.total).toFixed(2)) + ')';
 
     event.sender.send('downloadProgress', log_message);
   })
