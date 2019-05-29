@@ -14,12 +14,6 @@
                   <i class="fa fa-circle-o"></i> Reserva
                 </router-link>
               </li>
-
-              <li>
-                <router-link :to="{name: ''}">
-                  <i class="fa fa-circle-o"></i> Transferência
-                </router-link>
-              </li>
             </ul>
           </li>
           <!--

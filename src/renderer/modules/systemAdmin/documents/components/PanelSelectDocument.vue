@@ -16,25 +16,28 @@
                 <label>Informe o Documento</label>
                 <select class="form-control input-sm" v-model="form.type_document">
                   <option value>Selecione o documento</option>
-                  <option
-                    value="owner_notification_new_location"
-                  >Notificação Proprietário da Nova Locação</option>
+                  <option :value="list.value" v-for="list in select.documents">{{ list.name }}</option>
                 </select>
               </div>
             </div>
 
             <div class="row" style="margin-top: 10px;">
               <div class="col-md-12">
+                <!-- loading -->
+                <div class="loader pull-left" v-if="loading"></div>
+                <!-- / loading -->
                 <button
                   class="button btn btn-sm btn-default"
                   :disabled="!form.type_document"
+                  v-if="!loading"
                   @click="search"
                 >Pesquisar Documento</button>
-                
+
                 <button
                   class="button btn btn-sm btn-danger"
                   @click="confirmSetDefaultText"
                   :disabled="!this.form.type_document"
+                  v-if="!loading"
                 >Definir Texto Padrão</button>
               </div>
             </div>
@@ -46,36 +49,58 @@
 </template>
 
 <script>
+import systemAlert from "@/mixins/systemAlert";
+
 export default {
   name: "PanelSelectDocument",
+  mixins: [systemAlert],
   data() {
     return {
+      loading: false,
       form: {
         type_document: ""
+      },
+      select: {
+        documents: [
+          {
+            value: "owner_notification_new_location",
+            name: "notificação proprietário da nova locação"
+          }
+        ]
       }
     };
   },
   methods: {
+    /** Pesquisa os dados do documento na base de dados */
     search() {
-      this.$bus.$emit("openLoading");
-      this.$emit("searchDocument", this.form.type_document);
+      this.loading = true;
+
+      const queryParams = {
+        params: this.form
+      };
+
+      http
+        .get("admin/letter-and-documents/letter-text", queryParams)
+        .then(result => {
+          this.$emit("documentData", {
+            type_document: this.form.type_document,
+            text: result.data
+          });
+        })
+        .catch(err => {})
+        .finally(() => {
+          setTimeout(() => (this.loading = false), 300);
+        });
     },
     confirmSetDefaultText() {
-      this.$confirm(
-        "Tem certeza que deseja definir o texto padrão para o documento selecionado ?",
-        {
-          confirmButtonText: "Sim, confirmar",
-          cancelButtonText: "Não, cancelar",
-          type: "warning"
-        }
-      )
-        .then(() => {
+      const message = "Tem certeza que deseja definir o texto para o padrão ?";
+      this.showAlert(message).then(confirm => {
+        if (confirm) {
           this.setDefaultText();
-        })
-        .catch(_ => {});
+        }
+      });
     },
     setDefaultText() {
-      this.$bus.$emit("openLoading");
       const queryParams = {
         params: {
           type_document: this.form.type_document
@@ -83,12 +108,13 @@ export default {
       };
 
       http
-        .get("admin/document/set-default-text", queryParams)
+        .delete("admin/letter-and-documents/letter-text", queryParams)
         .then(result => {
           _notification.success();
           this.search();
         })
-        .catch(err => this.$$bus.$emit("closeLoading"));
+        .catch(err => {})
+        .finally(() => setTimeout(() => (this.loading = false), 300));
     }
   },
   watch: {

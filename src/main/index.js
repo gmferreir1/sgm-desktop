@@ -100,7 +100,6 @@ import { autoUpdater } from 'electron-updater'
 ipcMain.on('checkUpdates', (event, data) => {
 
 
-
   autoUpdater.on("error", () => {
     event.sender.send('updateError');
   })

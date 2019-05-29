@@ -1,5 +1,7 @@
 <template>
   <div>
+    <panel-select-document @documentData="setText"/>
+
     <div class="row">
       <div class="col-md-12">
         <div class="box box-danger">
@@ -13,13 +15,22 @@
           <div class="box-body" style="padding-top: 0px;">
             <div class="row">
               <div class="col-md-12">
-                <editor :disable="!dataComponent.data ? true : false" @textEditor="text => this.form.text = text"/>
+                <editor @textEditor="text => this.form.text = text"/>
               </div>
             </div>
 
             <div class="row" style="margin-top: 10px;">
               <div class="col-md-12">
-                <button class="button btn btn-sm btn-primary" @click="submitForm" :disabled="!this.form.text">
+                <!-- loading -->
+                <div class="loader pull-left" v-if="loading"></div>
+                <!-- / loading -->
+
+                <button
+                  class="button btn btn-sm btn-primary"
+                  @click="update"
+                  :disabled="!this.form.text"
+                  v-if="!loading"
+                >
                   <span class="fa fa-check"></span>
                   Salvar Dados
                 </button>
@@ -33,20 +44,24 @@
 </template>
 
 <script>
-import Editor from "../../../../components/Editor";
+import PanelSelectDocument from "./PanelSelectDocument";
+import Editor from "@/components/Editor";
 
 export default {
   name: "DocumentEditor",
-  props: ["dataComponent", "searchDocument"],
+  props: ["searchDocument"],
   components: {
+    PanelSelectDocument,
     Editor
   },
   data() {
     return {
+      loading: false,
       type_document: null,
       form: {
         text: ""
-      }
+      },
+      document_data: {}
     };
   },
   methods: {
@@ -66,32 +81,23 @@ export default {
         })
         .catch(err => this.$bus.$emit("closeLoading"));
     },
-    submitForm() {
-      if (!this.form.id) {
-        this.create();
-        return;
-      }
-      this.update();
-    },
-    create() {
-      this.$bus.$emit("openLoading");
-      this.form.type_document = this.searchDocument.data;
-      http
-        .post("admin/document", this.form)
-        .then(result => {
-          _notification.success();
-          this.getData();
-        })
-        .catch(err => this.$bus.$emit("closeLoading"));
+    setText(data) {
+      this.document_data = data;
+      this.$bus.$emit("setTextEditor", data.text);
     },
     update() {
-      this.$bus.$emit("openLoading");
-      this.form.type_document = this.searchDocument.data;
-      http.put(`admin/document/${this.form.id}`, this.form)
+      this.loading = true;
+      const data = {
+        text: this.form.text,
+        type_letter: this.document_data.type_document
+      };
+      http
+        .put("admin/letter-and-documents/letter-text", data)
         .then(result => {
           _notification.success();
-          this.getData();
-        }).catch(err => this.$bus.$emit("closeLoading"))
+        })
+        .catch(err => {})
+        .finally(() => setTimeout(() => (this.loading = false), 300));
     }
   },
   watch: {
@@ -99,14 +105,6 @@ export default {
       if (!this.dataComponent.data) {
         this.$bus.$emit("cleanHistoric");
       }
-    },
-    searchDocument() {
-      
-      this.form = {
-        text: ""
-      }
-
-      this.getData();
     }
   }
 };

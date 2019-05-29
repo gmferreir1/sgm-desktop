@@ -115,10 +115,12 @@ export default {
   methods: {
     dateFormat,
     getData() {
+      /*
       http.get("admin/dashboard")
         .then(results => {
           this.data_panel = results.data;
         }).catch(err => { })
+        */
     }
   },
   mounted() {
