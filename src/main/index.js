@@ -1,9 +1,8 @@
 import { app, BrowserWindow, ipcMain, Menu, shell } from "electron";
 const PDFWindow = require("electron-pdf-window");
-const ipc = require('electron').ipcRenderer;
-const path = require('path');
-const { download } = require('electron-dl');
-
+const ipc = require("electron").ipcRenderer;
+const path = require("path");
+const { download } = require("electron-dl");
 
 /**
  * Set `__static` path to static files in production
@@ -30,15 +29,15 @@ function createWindow() {
     width: 1000,
     useContentSize: true,
     fullscreen: false,
-    icon: path.join(__dirname, '../renderer/assets/icons/64x64.png'),
+    icon: path.join(__dirname, "../renderer/assets/icons/64x64.png"),
     webPreferences: {
-      devTools: false
+      devTools: process.env.NODE_ENV === "development" ? true : false
     }
   });
 
   mainWindow.maximize();
   mainWindow.loadURL(winURL);
-  mainWindow.openDevTools()
+  mainWindow.openDevTools();
 
   mainWindow.on("closed", () => {
     mainWindow = null;
@@ -48,14 +47,12 @@ function createWindow() {
 
   mainWindow.setMenuBarVisibility(false);
 
-
   ipcMain.on("printPdf", async (event, dataPrint) => {
-
     if (!dataPrint.file_type || dataPrint.file_type === "pdf") {
       const win = new PDFWindow({
         width: 1024,
         height: 768
-      })
+      });
 
       win.loadURL(dataPrint.url);
       return;
@@ -63,11 +60,9 @@ function createWindow() {
 
     if (dataPrint.file_type === "word") {
       const win = BrowserWindow.getFocusedWindow();
-      return await download(win, dataPrint.url, {saveAs: true});
+      return await download(win, dataPrint.url, { saveAs: true });
     }
-
   });
-
 }
 
 app.on("ready", createWindow);
@@ -75,7 +70,7 @@ app.on("ready", createWindow);
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
-    mainWindow.webContents.send('clearLocalStorage');
+    mainWindow.webContents.send("clearLocalStorage");
   }
 });
 
@@ -93,44 +88,45 @@ app.on("activate", () => {
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
  */
 
-import { autoUpdater } from 'electron-updater'
+import { autoUpdater } from "electron-updater";
 import { parse } from "url";
 
-ipcMain.on('checkUpdates', (event, data) => {
-
-
+ipcMain.on("checkUpdates", (event, data) => {
   autoUpdater.on("error", () => {
-    event.sender.send('updateError');
-  })
-  
+    event.sender.send("updateError");
+  });
+
   autoUpdater.on("update-not-available", () => {
-    event.sender.send('updateNotAvailable');
-  })
+    event.sender.send("updateNotAvailable");
+  });
 
   autoUpdater.on("update-available", () => {
-    event.sender.send('updateAvailable');
-  })
+    event.sender.send("updateAvailable");
+  });
 
-  autoUpdater.on('download-progress', (progressObj) => {
-    let log_message = "Download speed: " + parseInt(progressObj.bytesPerSecond);
-    log_message = log_message + ' - Downloaded ' + parseInt(progressObj.percent) + '%';
-    log_message = log_message + ' (' + parseInt(progressObj.transferred) + "/" + parseInt(progressObj.total) + ')';
+  autoUpdater.on("download-progress", progressObj => {
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + " - Downloaded " + progressObj.percent + "%";
+    log_message =
+      log_message +
+      " (" +
+      progressObj.transferred +
+      "/" +
+      progressObj.total +
+      ")";
 
-    event.sender.send('downloadProgress', log_message);
-  })
+    event.sender.send("downloadProgress", log_message);
+  });
 
-
-  autoUpdater.on('update-downloaded', () => {
-    autoUpdater.quitAndInstall()
-  })
-
-})
+  autoUpdater.on("update-downloaded", () => {
+    autoUpdater.quitAndInstall();
+  });
+});
 
 autoUpdater.logger = require("electron-log");
 autoUpdater.logger.transports.file.level = "info";
 
-
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   //autoUpdater.updateConfigPath = path.join("/home/guilherme/Programing/mwd-restaurant/electron/app-update.yml");
   autoUpdater.checkForUpdates();
 }

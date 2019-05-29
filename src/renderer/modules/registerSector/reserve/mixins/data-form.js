@@ -428,6 +428,17 @@ export default {
       }
     }
   },
+  watch: {
+    refreshDataReserve() {
+      this.select.status.push({ value: "c", name: "CANCELADO" });
+      setTimeout(() => this.edit(this.$route.params.id), 200);
+    },
+    "$route.name"() {
+      if (this.$route.name === "registerSector_reserve_edit") {
+        this.edit(this.$route.params.id);
+      }
+    }
+  },
   async mounted() {
     this.getTypesImmobile();
     this.getUsers();
@@ -436,15 +447,20 @@ export default {
     const routeData = this.$route;
     if (routeData.name === "registerSector_reserve_edit") {
       await this.edit(routeData.params.id);
+    } else {
+      const userLocalStorageData = JSON.parse(
+        localStorage.getItem("dataLogin")
+      );
+
+      this.form.attendant_reception = userLocalStorageData.id;
     }
 
     /** verifica se o contrato for diferente de cancelado para remover o status de cancelamento do select */
     this.checkStatusForSelect();
-  },
-  watch: {
-    refreshDataReserve() {
-      this.select.status.push({ value: "c", name: "CANCELADO" });
-      setTimeout(() => this.edit(this.$route.params.id), 200);
-    }
+
+    /** fica escutando o evento no modal de listagem do fluxo de atendimento */
+    this.$bus.$on("setAttendantRegisterSector", scoreData => {
+      this.form.attendant_register = scoreData.user;
+    });
   }
 };

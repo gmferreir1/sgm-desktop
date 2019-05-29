@@ -11,7 +11,11 @@
 
             <!-- button -->
             <div class="pull-right">
-              <button class="button btn btn-sm btn-danger" @click="submitForm" :disabled="blockTotalChanges">
+              <button
+                class="button btn btn-sm btn-danger"
+                @click="submitForm"
+                :disabled="blockTotalChanges"
+              >
                 <span class="fa fa-check"></span>
                 Salvar Dados
               </button>
@@ -21,6 +25,7 @@
                   type="button"
                   class="btn btn-primary btn-sm btn-flat"
                   data-toggle="dropdown"
+                  :disabled="!form.id"
                 >
                   <span class="fa fa-check-circle-o"></span>
                   Ações
@@ -29,6 +34,7 @@
                   type="button"
                   class="btn btn-primary btn-sm btn-flat dropdown-toggle"
                   data-toggle="dropdown"
+                  :disabled="!form.id"
                 >
                   <span class="caret"></span>
                 </button>
@@ -43,7 +49,10 @@
                     <a href="#" @click.prevent="printRecord">Imprimir ficha de reserva</a>
                   </li>
                   <li v-if="!disabledCancelReserve">
-                    <a href="#" @click.prevent="$emit('openModalCancelReserve', form.id)">Cancelar reserva</a>
+                    <a
+                      href="#"
+                      @click.prevent="$emit('openModalCancelReserve', form.id)"
+                    >Cancelar reserva</a>
                   </li>
                 </ul>
               </div>
@@ -87,10 +96,7 @@
                 <div class="error">{{ validation.firstError('form.owner_code') }}</div>
               </div>
 
-              <div
-                class="col-md-1"
-                style="width: 30px; padding-left: 0px;; margin-top: 25px;"
-              >
+              <div class="col-md-1" style="width: 30px; padding-left: 0px;; margin-top: 25px;">
                 <div class="loader" v-if="loading_owner_data"></div>
                 <a
                   href="#"
@@ -137,10 +143,7 @@
                 <div class="error">{{ validation.firstError('form.immobile_code') }}</div>
               </div>
 
-              <div
-                class="col-md-1"
-                style="width: 30px; padding-left: 0px;; margin-top: 25px;"
-              >
+              <div class="col-md-1" style="width: 30px; padding-left: 0px;; margin-top: 25px;">
                 <div class="loader" v-if="loading_immobile_data"></div>
                 <a
                   href="#"
@@ -278,7 +281,7 @@
             </div>
 
             <div class="row" style="margin-top: 10px;">
-              <div class="col-md-3 col-lg-3" style="min-width: 300px;">
+              <div class="col-md-3 col-lg-3" style="min-width: 300px; padding-right: 0px">
                 <label>Responsável Cadastro</label>
                 <multi-select
                   :id="'attendant_register'"
@@ -292,6 +295,12 @@
                   @value="value => form.attendant_register = value"
                 />
                 <div class="error">{{ validation.firstError('form.attendant_register') }}</div>
+              </div>
+
+              <div class="col-md-1" style="width: 30px; padding-left: 0px;; margin-top: 25px;">
+                <a href="#" @click.prevent="$emit('openModalFluxAttendance')">
+                  <img :src="images.search">
+                </a>
               </div>
 
               <div class="col-md-3 col-lg-3" style="min-width: 300px;">
@@ -334,10 +343,7 @@
                 <div class="error">{{ validation.firstError('form.tenant_code') }}</div>
               </div>
 
-              <div
-                class="col-md-1"
-                style="width: 30px; padding-left: 0px;; margin-top: 25px;"
-              >
+              <div class="col-md-1" style="width: 30px; padding-left: 0px;; margin-top: 25px;">
                 <div class="loader" v-if="loading_tenant_data"></div>
                 <a
                   href="#"
@@ -682,10 +688,7 @@
                 />
               </div>
 
-              <div
-                class="col-md-1"
-                style="width: 30px; padding-left: 0px;; margin-top: 25px;"
-              >
+              <div class="col-md-1" style="width: 30px; padding-left: 0px;; margin-top: 25px;">
                 <div class="loader" v-if="loading_query_zip_code_data"></div>
                 <a
                   href="#"
@@ -793,12 +796,19 @@
 
             <div class="row" style="margin-top: 10px;">
               <div class="col-md-12">
-                <button class="button btn btn-sm btn-danger" @click="submitForm" :disabled="blockTotalChanges">
+                <button
+                  class="button btn btn-sm btn-danger"
+                  @click="submitForm"
+                  :disabled="blockTotalChanges"
+                >
                   <span class="fa fa-check"></span>
                   Salvar Dados
                 </button>
 
-                <router-link :to="{name: 'registerSector_reserve_list'}" class="button btn btn-sm btn-default">Cancelar Dados</router-link>
+                <router-link
+                  :to="{name: 'registerSector_reserve_list'}"
+                  class="button btn btn-sm btn-default"
+                >Cancelar Dados</router-link>
               </div>
             </div>
             <div class="row">

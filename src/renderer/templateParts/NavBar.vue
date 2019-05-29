@@ -92,10 +92,11 @@ export default {
   width: 30px !important;
   height: 30px !important;
   border-radius: 5px !important;
-  padding: 5px 0px 0px 8px !important;
+  padding: 5px 0px 0px 0px !important;
   font-weight: bold !important;
   color: #ffffff !important;
   font-size: 20px !important;
-  border-radius: 40px !important;
+  border-radius: 20px !important;
+  text-align: center;
 }
 </style>
