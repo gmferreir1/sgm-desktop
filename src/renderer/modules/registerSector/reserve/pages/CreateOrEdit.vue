@@ -4,6 +4,7 @@
       @opeModalHistoricReserve="reserve_id => data_modal_historic_reserve = { reserve_id }"
       @openModalCancelReserve="reserve_id => data_modal_cancel_reserve = { reserve_id }"
       @openModalFluxAttendance="data => data_modal_flux_attendance = { data } "
+      @openModalSendEmail="reserve_data => data_modal_send_email = { reserve_data } "
       :refreshDataReserve="refresh_data_reserve"
     />
 
@@ -19,6 +20,10 @@
     <modal-flux-attendance :dataModal="data_modal_flux_attendance"/>
     <!-- / MODAL FLUXO DE ATENDIMENTO -->
 
+    <!-- MODAL ENVIO DE EMAIL -->
+    <modal-send-email :dataModal="data_modal_send_email" />
+    <!-- / MODAL ENVIO DE EMAIL -->
+
   </div>
 </template>
 
@@ -27,6 +32,7 @@ import FormReserve from "../components/FormReserve";
 import ModalHistoricReserve from "../components/ModalHistoricReserve";
 import ModalCancelReserve from "../components/ModalCancelReserve";
 import ModalFluxAttendance from "../components/ModalFluxAttendance";
+import ModalSendEmail from "../components/ModalSendEmail";
 
 export default {
   name: "CreateOrEdit",
@@ -34,14 +40,16 @@ export default {
     FormReserve,
     ModalHistoricReserve,
     ModalCancelReserve,
-    ModalFluxAttendance
+    ModalFluxAttendance,
+    ModalSendEmail
   },
   data() {
     return {
       data_modal_historic_reserve: {},
       data_modal_cancel_reserve: {},
       refresh_data_reserve: false,
-      data_modal_flux_attendance: {}
+      data_modal_flux_attendance: {},
+      data_modal_send_email: {}
     };
   }
 };

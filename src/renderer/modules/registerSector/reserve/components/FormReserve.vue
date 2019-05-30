@@ -25,7 +25,7 @@
                   type="button"
                   class="btn btn-primary btn-sm btn-flat"
                   data-toggle="dropdown"
-                  :disabled="!form.id"
+                  v-if="form.id"
                 >
                   <span class="fa fa-check-circle-o"></span>
                   Ações
@@ -34,7 +34,7 @@
                   type="button"
                   class="btn btn-primary btn-sm btn-flat dropdown-toggle"
                   data-toggle="dropdown"
-                  :disabled="!form.id"
+                  v-if="form.id"
                 >
                   <span class="caret"></span>
                 </button>
@@ -48,6 +48,11 @@
                   <li v-if="!disabledCancelReserve">
                     <a href="#" @click.prevent="printRecord">Imprimir ficha de reserva</a>
                   </li>
+                  <!--
+                  <li v-if="disabledChangeContractData && form.status !== 'c' ">
+                    <a href="#" @click.prevent="$emit('openModalSendEmail', form)">Envio de Emails</a>
+                  </li>
+                  -->
                   <li v-if="!disabledCancelReserve">
                     <a
                       href="#"
@@ -148,7 +153,7 @@
                 <a
                   href="#"
                   @click.prevent="getImmobileData"
-                  v-if="!loading_immobile_data && form.immobile_code"
+                  v-if="!loading_immobile_data && form.immobile_code && !form.id"
                 >
                   <img :src="images.search">
                 </a>

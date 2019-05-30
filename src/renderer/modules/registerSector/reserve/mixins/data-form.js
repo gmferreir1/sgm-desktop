@@ -288,6 +288,10 @@ export default {
             reserveData.immobile_type = "";
           }
 
+          reserveData.client_state = !reserveData.client_state
+            ? ""
+            : reserveData.client_state;
+
           this.form = reserveData;
           this.data_before_update.status = reserveData.status;
           /** seta no formulário os dados do contrato */
