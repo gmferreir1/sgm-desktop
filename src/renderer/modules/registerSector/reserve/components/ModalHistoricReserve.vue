@@ -147,6 +147,7 @@ export default {
   watch: {
     dataModal() {
       this.loading = true;
+      this.$bus.$emit("cleanHistoric");
       this.openModal();
       this.getData();
     }

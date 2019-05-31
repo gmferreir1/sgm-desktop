@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="modalSendEmail" class="modal" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-md">
+      <div class="modal-dialog modal-xl">
         <div class="modal-content roundbox boxshadow">
           <!-- modal header -->
           <modal-header @closeModal="closeModal" title="ASSISTENTE PARA ENVIO DE EMAIL"/>
@@ -283,7 +283,7 @@ export default {
         client_email: "",
         text_email: ""
       };
-
+      this.$bus.$emit("cleanHistoric");
       this.active = 0;
       this.validation.reset();
     },
