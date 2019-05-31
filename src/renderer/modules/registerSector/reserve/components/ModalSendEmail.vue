@@ -14,7 +14,7 @@
                 <el-steps :active="active" finish-status="success">
                   <el-step title="Informe o tipo de email"></el-step>
                   <el-step title="Informe os dados do cliente"></el-step>
-                  <el-step title="Step 3"></el-step>
+                  <el-step title="Dados do email"></el-step>
                 </el-steps>
                 <!-- / step -->
               </div>
@@ -62,23 +62,44 @@
             </div>
             <!-- / step 2 -->
 
+            <!-- step 3 -->
+            <div class="row" v-show="active === 2" style="margin-top: 10px;">
+              <div class="col-md-12">
+                <editor
+                  @textEditor="text => form.text_email = text"
+                  v-show="form.type_email !== 'welcome_tenant' "
+                />
+                <img :src="images.welcome" v-show="form.type_email === 'welcome_tenant'">
+              </div>
+            </div>
+            <!-- / step 3 -->
+
             <div class="row" style="margin-top: 10px;">
               <div class="col-md-12">
+                <div class="loader pull-left" v-if="loading_text_data"></div>
+
                 <button
                   class="button btn btn-sm btn-default"
                   @click="--active"
-                  v-if="active > 0"
+                  v-if="active > 0 && !loading_text_data"
                 >Voltar</button>
                 <button
                   class="button btn btn-sm btn-primary"
                   @click="next"
                   v-if="active === 0"
+                  :disabled="!form.type_email"
                 >Iniciar o processo</button>
                 <button
                   class="button btn btn-sm btn-primary"
                   @click="validateForm"
-                  v-if="active === 1"
+                  v-if="active === 1 && !loading_text_data"
                 >Próximo passo</button>
+                <button
+                  class="button btn btn-sm btn-danger"
+                  :disabled="searchStringNotPermited"
+                  v-if="active === 2 && !loading_text_data"
+                  @click="sendEmail"
+                >{{ searchStringNotPermited ? "Remova os @ para continuar" : "Finalizar/Enviar" }}</button>
               </div>
             </div>
           </div>
@@ -99,6 +120,7 @@
 <script>
 import ModalHeader from "@/components/ModalHeader";
 import ModalFooter from "@/components/ModalFooter";
+import Editor from "@/components/Editor";
 
 import rulesValidator from "../mixins/rules-validator-send-email";
 
@@ -108,16 +130,21 @@ export default {
   mixins: [rulesValidator],
   components: {
     ModalHeader,
-    ModalFooter
+    ModalFooter,
+    Editor
   },
   data() {
     return {
       loading_client_data: false,
+      loading_text_data: false,
       loading: false,
       active: 0,
       icons: {
         check: require("@/assets/icons/check.png"),
         search: require("@/assets/icons/search.png")
+      },
+      images: {
+        welcome: ""
       },
       data_list: {
         data: []
@@ -127,14 +154,20 @@ export default {
           {
             value: "owner_notification_new_location",
             name: "Notificação proprietário da nova locação"
+          },
+          {
+            value: "welcome_tenant",
+            name: "Bem vindas ao inquilino"
           }
         ]
       },
       form: {
+        reserve_id: "",
         type_email: "",
         client_code: "",
         client_name: "",
-        client_email: ""
+        client_email: "",
+        text_email: ""
       }
     };
   },
@@ -146,6 +179,11 @@ export default {
       });
     },
     next() {
+      if (this.active === 1) {
+        this.getEmailData();
+        return;
+      }
+
       if (this.active++ > 2) this.active = 0;
     },
     /** Consulta os dados do cliente na API */
@@ -163,6 +201,7 @@ export default {
         .then(result => {
           const data = result.data;
           this.form.client_code = data.codigo;
+          this.form.client_name = data.nome.toUpperCase();
           this.form.client_email = data.nome.toUpperCase();
 
           const email = data.email ? data.email.split(" ") : "";
@@ -181,24 +220,101 @@ export default {
           setTimeout(() => (this.loading_client_data = false), 300);
         });
     },
+    /** Busca os dados do email selecionado */
+    getEmailData() {
+      if (!this.form.type_email) {
+        _notification.error("Informe o tipo de email");
+        return;
+      }
+      this.loading_text_data = true;
+
+      const queryParams = {
+        params: this.form
+      };
+
+      http
+        .get("register-sector/reserve/query/get-email-data", queryParams)
+        .then(result => {
+          /** Email de boas vindas ao inquilino */
+          if (this.form.type_email === "welcome_tenant") {
+            this.images.welcome = `data:image/png;base64,${
+              result.data.base_64_image
+            }`;
+            this.active++;
+            return;
+          }
+
+          this.form.text_email = result.data;
+          this.$bus.$emit("setTextEditor", this.form.text_email);
+          this.active++;
+        })
+        .catch(err => {})
+        .finally(() => {
+          setTimeout(() => (this.loading_text_data = false), 300);
+        });
+    },
+    /** Faz o envio do email */
+    sendEmail() {
+      this.loading_text_data = true;
+
+      const queryParams = {
+        params: {
+          data: this.form
+        }
+      };
+      http
+        .get("register-sector/reserve/email/send", queryParams)
+        .then(result => {
+          _notification.success();
+          setTimeout(() => {
+            this.closeModal();
+            this.cleanForm();
+          }, 300);
+        })
+        .catch(err => {})
+        .finally(() => setTimeout(() => (this.loading_text_data = false), 300));
+    },
+    cleanForm() {
+      this.form = {
+        reserve_id: "",
+        type_email: "",
+        client_code: "",
+        client_name: "",
+        client_email: "",
+        text_email: ""
+      };
+
+      this.active = 0;
+      this.validation.reset();
+    },
     closeModal() {
       $("#modalSendEmail").modal("hide");
     }
   },
+  computed: {
+    searchStringNotPermited() {
+      const str = this.form.text_email;
+      const check = str.indexOf("@@");
+
+      if (check === -1) {
+        return false;
+      }
+      return true;
+    }
+  },
   watch: {
     dataModal() {
+      this.cleanForm();
       this.openModal();
     },
     "form.type_email"() {
       const reserveData = this.dataModal.reserve_data;
 
-      /** usuário selecionou envio de email de notificaçao ao proprietário */
-      if (this.form.type_email === "owner_notification_new_location") {
-        this.form.client_code = reserveData.owner_code;
-        this.form.client_name = reserveData.owner_name
-          ? reserveData.owner_name.toUpperCase()
-          : "";
-      }
+      this.form.client_code = reserveData.owner_code;
+      this.form.client_name = reserveData.owner_name
+        ? reserveData.owner_name.toUpperCase()
+        : "";
+      this.form.reserve_id = reserveData.id;
     }
   }
 };

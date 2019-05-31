@@ -3,6 +3,7 @@ const PDFWindow = require("electron-pdf-window");
 const ipc = require("electron").ipcRenderer;
 const path = require("path");
 const { download } = require("electron-dl");
+const log = require("electron-log");
 
 /**
  * Set `__static` path to static files in production
@@ -69,8 +70,8 @@ app.on("ready", createWindow);
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
-    app.quit();
     mainWindow.webContents.send("clearLocalStorage");
+    app.quit();
   }
 });
 
@@ -89,7 +90,6 @@ app.on("activate", () => {
  */
 
 import { autoUpdater } from "electron-updater";
-import { parse } from "url";
 
 ipcMain.on("checkUpdates", (event, data) => {
   autoUpdater.on("error", () => {
@@ -115,15 +115,23 @@ ipcMain.on("checkUpdates", (event, data) => {
       progressObj.total +
       ")";
 
+    log.info(JSON.stringify(progressObj));
     event.sender.send("downloadProgress", log_message);
   });
 
   autoUpdater.on("update-downloaded", () => {
     autoUpdater.quitAndInstall();
   });
+
+  /** se demorar disparar algum evento ele dispara este para a mensagem
+   *  não ficar aparecendo para o usuário
+   *  */
+  setTimeout(() => {
+    event.sender.send("updateNotAvailable");
+  }, 4000);
 });
 
-autoUpdater.logger = require("electron-log");
+autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
 
 if (process.env.NODE_ENV === "production") {

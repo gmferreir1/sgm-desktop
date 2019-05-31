@@ -48,11 +48,9 @@
                   <li v-if="!disabledCancelReserve">
                     <a href="#" @click.prevent="printRecord">Imprimir ficha de reserva</a>
                   </li>
-                  <!--
                   <li v-if="disabledChangeContractData && form.status !== 'c' ">
                     <a href="#" @click.prevent="$emit('openModalSendEmail', form)">Envio de Emails</a>
                   </li>
-                  -->
                   <li v-if="!disabledCancelReserve">
                     <a
                       href="#"

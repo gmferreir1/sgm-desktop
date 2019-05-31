@@ -323,6 +323,11 @@ export default {
       );
       contractData.due_date_rent = dateFormat(contractData.due_date_rent);
       contractData.delivery_key = dateFormat(contractData.delivery_key);
+      
+      contractData.loyalty_discount = !contractData.loyalty_discount ? "n" : contractData.loyalty_discount;
+      contractData.ticket = !contractData.ticket ? "y" : contractData.ticket;
+      contractData.bank_expense = !contractData.bank_expense ? "y" : contractData.bank_expense;
+
       this.form.contract_data = contractData;
     },
     /**
@@ -441,6 +446,11 @@ export default {
       if (this.$route.name === "registerSector_reserve_edit") {
         this.edit(this.$route.params.id);
       }
+    },
+    "form.contract_data.date_init_contract"() {
+      this.form.contract_data.due_date_rent = moment(this.form.contract_data.date_init_contract, "DD/MM/YYYY")
+        .add(1, "months")
+        .format("DD/MM/YYYY");
     }
   },
   async mounted() {
