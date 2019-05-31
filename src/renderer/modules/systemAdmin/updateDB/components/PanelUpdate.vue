@@ -15,6 +15,7 @@
 
           <div class="box-body">
             <div class="row" style="margin-top: 10px;">
+              <!-- TIPOS DE IMOVEIS -->
               <div class="col-md-3 col-sm-6 col-xs-12">
                 <!-- loader -->
                 <div class="loader" v-if="loading_type_immobile"></div>
@@ -37,20 +38,47 @@
                   </div>
                 </a>
               </div>
+              <!-- / TIPOS DE IMOVEIS -->
+
+              <!-- IMOVEIS -->
+              <div class="col-md-3 col-sm-6 col-xs-12">
+                <a
+                  href="#"
+                  @click.prevent="show_form_send_file = !show_form_send_file"
+                  style="color: inherit"
+                >
+                  <div class="info-box">
+                    <span class="info-box-icon bg-black">
+                      <i class="fa fa-home"></i>
+                    </span>
+                    <div class="info-box-content">
+                      <span class="info-box-text">Imóveis</span>
+                      <span class="info-box-text-sub">Atualiza a base de imóveis do sistema</span>
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <!-- / IMOVEIS -->
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <form-send-file v-if="show_form_send_file" />
   </div>
 </template>
 
 <script>
+import FormSendFile from "./FormSendFile";
+
 export default {
   name: "PanelUpdate",
+  components: { FormSendFile },
   data() {
     return {
       loading_type_immobile: false,
+      show_form_send_file: false,
       icons: {
         database: require("@/assets/icons/database.png")
       }

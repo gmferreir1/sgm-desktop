@@ -6,29 +6,35 @@
         <!-- general form elements -->
         <div class="box box-primary">
           <div class="box-header with-border" style="padding-top: 3px">
-            <h3 class="box-title" style="padding-bottom: 10px; padding-top: 5px;">
-              <span class="fa fa-database"></span>
-              FORMULÁRIO ENVIO DE ARQUIVO
+            <h3 class="box-title" style="padding-bottom: 0px; padding-top: 0px;">
+              <img :src="icons.database">
+              Painel Envio de Arquivo
             </h3>
           </div>
           <!-- /.box-header -->
 
           <div class="box-body">
+
+            <div class="row">
+              <div class="col-md-12">
+                <span> <span style="font-weight: bold">Atenção:</span> Permitido apenas arquivo <code>xlsx</code></span>
+              </div>
+            </div>
+
             <form @submit.prevent="attachmentFile" id="form_report">
               <div class="row" style="margin-top: 10px;">
                 <div class="col-md-12">
-                  <label style="font-size: 12px">Envio da Base de Dados</label>
+                  <label style="font-size: 12px">Selecione o arquivo</label>
                   <input type="file" id="file" name="file">
                 </div>
               </div>
 
               <div class="row" style="margin-top: 10px;">
-                <div class="col-md-2">
-                  
+                <div class="col-md-12">
                   <div style="font-size: 12px;" v-if="loading">{{ message_send }}</div>
 
                   <!-- loader -->
-                  <div class="loader" v-if="loading"></div>
+                  <div class="loader pull-left" v-if="loading"></div>
                   <!-- / loader -->
 
                   <button
@@ -53,7 +59,10 @@ export default {
     return {
       loading: false,
       files: [],
-      message_send: null
+      message_send: null,
+      icons: {
+        database: require("@/assets/icons/database.png")
+      }
     };
   },
   methods: {
@@ -77,21 +86,20 @@ export default {
               this.message_send =
                 progress != 100
                   ? "Enviando arquivo: " + progress + " %"
-                  : "Gravando arquivo no servidor, aguarde ...";
+                  : "Atualizando a base de dados, aguarde ...";
             }
           };
 
           http
-            .post("admin/update-database/upload-file", form, config)
+            .post("admin/update-database/file-upload", form, config)
             .then(result => {
               _notification.success();
               $("#file").val("");
               this.cleanForm();
               setTimeout(() => (this.loading = false));
             })
-            .catch(err => {
-              this.loading = false;
-            });
+            .catch(err => {})
+            .finally(() => (this.loading = false));
         }
       }
     }
