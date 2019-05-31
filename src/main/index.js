@@ -31,9 +31,11 @@ function createWindow() {
     useContentSize: true,
     fullscreen: false,
     icon: path.join(__dirname, "../renderer/assets/icons/64x64.png"),
+    /*
     webPreferences: {
       devTools: process.env.NODE_ENV === "development" ? true : false
     }
+    */
   });
 
   mainWindow.maximize();
