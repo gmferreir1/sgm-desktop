@@ -225,7 +225,7 @@ export default {
   data() {
     return {
       loading: true,
-      loading_printer: true,
+      loading_printer: false,
       per_page: "100",
       data_list: {
         data: [],
@@ -247,8 +247,11 @@ export default {
     getData() {
       const filter = localStorage.getItem("filter");
       const sort = localStorage.getItem("sort");
+      const page = !JSON.parse(localStorage.getItem("paginate"))
+        ? 1
+        : JSON.parse(localStorage.getItem("paginate")).page;
       const queryParams = {
-        params: { filter, sort }
+        params: { filter, sort, page }
       };
 
       const printer = JSON.parse(filter).print;

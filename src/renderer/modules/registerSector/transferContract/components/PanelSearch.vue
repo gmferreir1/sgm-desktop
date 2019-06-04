@@ -67,7 +67,7 @@
                   Pesquisar Dados
                 </button>
                 <div class="btn-group">
-                  
+ 
                   <div class="loader" v-if="loadingPrinter"></div>
 
                   <button

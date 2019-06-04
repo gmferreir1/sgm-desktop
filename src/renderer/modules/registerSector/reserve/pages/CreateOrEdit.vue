@@ -13,17 +13,19 @@
     <!-- / MODAL HISTÓRICOS RESERVA -->
 
     <!-- MODAL PARA O CANCELAMENTO DA RESERVA -->
-    <modal-cancel-reserve :dataModal="data_modal_cancel_reserve" @refreshDataReserve="refresh_data_reserve = !refresh_data_reserve"/>
+    <modal-cancel-reserve
+      :dataModal="data_modal_cancel_reserve"
+      @refreshDataReserve="refresh_data_reserve = !refresh_data_reserve"
+    />
     <!-- / MODAL PARA O CANCELAMENTO DA RESERVA -->
-   
+
     <!-- MODAL FLUXO DE ATENDIMENTO -->
     <modal-flux-attendance :dataModal="data_modal_flux_attendance"/>
     <!-- / MODAL FLUXO DE ATENDIMENTO -->
 
     <!-- MODAL ENVIO DE EMAIL -->
-    <modal-send-email :dataModal="data_modal_send_email" />
+    <modal-send-email :dataModal="data_modal_send_email"/>
     <!-- / MODAL ENVIO DE EMAIL -->
-
   </div>
 </template>
 
@@ -51,6 +53,19 @@ export default {
       data_modal_flux_attendance: {},
       data_modal_send_email: {}
     };
+  },
+  beforeDestroy() {
+    const routeName = this.$route.name;
+
+    if (
+      routeName !== "registerSector_reserve_list" &&
+      routeName !== "registerSector_reserve_edit" &&
+      routeName !== "registerSector_reserve_create"
+    ) {
+      localStorage.removeItem("sort");
+      localStorage.removeItem("filter");
+      localStorage.removeItem("paginate");
+    }
   }
 };
 </script>

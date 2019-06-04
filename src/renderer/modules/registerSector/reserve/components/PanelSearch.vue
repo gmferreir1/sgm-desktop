@@ -193,7 +193,7 @@ export default {
         localStorage.getItem("filter", JSON.stringify(this.filter))
       );
       if (!filterData) {
-        this.filter.status = ["r", "d", "a", "cd"];
+        this.filter.status = ["r", "d", "a", "cd", "p"];
       } else {
         this.filter.status = filterData.status;
       }

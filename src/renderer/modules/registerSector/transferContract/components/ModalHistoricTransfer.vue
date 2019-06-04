@@ -38,18 +38,18 @@
                 <thead>
                   <tr>
                     <th style="width: 70%">Histórico</th>
-                    <th>Responsável</th>
-                    <th>Data</th>
+                    <th style="width: 15%">Responsável</th>
+                    <th style="width: 15%;">Data</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(list, index) in data_list.data" :key="index">
-                    <td style="width: 80%" v-html="list.text" class="historic_list"></td>
+                    <td style="width: 70%" v-html="list.text" class="historic_list"></td>
                     <td
                       :title="`${list.responsibleData.name.toUpperCase()} ${list.responsibleData.last_name.toUpperCase()}`"
-                      style="width: 10%; text-transform: uppercase"
+                      style="width: 15%; text-transform: uppercase"
                     >{{ list.responsibleData.name }}</td>
-                    <td style="width: 20%">{{ dateFormat(list.created_at, "DD/MM/YYYY HH:mm:ss") }}</td>
+                    <td style="width: 15%">{{ dateFormat(list.created_at, "DD/MM/YYYY HH:mm:ss") }}</td>
                   </tr>
                 </tbody>
               </table>

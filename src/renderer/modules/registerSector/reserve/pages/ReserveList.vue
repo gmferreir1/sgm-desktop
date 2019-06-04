@@ -38,6 +38,7 @@ export default {
     ) {
       localStorage.removeItem("sort");
       localStorage.removeItem("filter");
+      localStorage.removeItem("paginate");
     }
   }
 };
