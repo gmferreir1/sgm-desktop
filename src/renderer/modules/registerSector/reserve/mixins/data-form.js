@@ -114,12 +114,12 @@ export default {
         .get("register-sector/reserve/query/client", queryParams)
         .then(result => {
           if (type === "owner") {
-            this.form.owner_code = result.data.codigo;
-            this.form.owner_name = result.data.nome.toUpperCase();
+            this.form.owner_code = result.data.client_code;
+            this.form.owner_name = result.data.client_name.toUpperCase();
           }
           if (type === "tenant") {
-            this.form.tenant_code = result.data.codigo;
-            this.form.tenant_name = result.data.nome.toUpperCase();
+            this.form.tenant_code = result.data.client_code;
+            this.form.tenant_name = result.data.client_name.toUpperCase();
           }
         })
         .catch(err => {})
@@ -147,13 +147,12 @@ export default {
         .get("register-sector/reserve/query/immobile", queryParams)
         .then(result => {
           const data = result.data.imovel;
-          this.form.address = `${data.endereco}, ${data.numero}`.toUpperCase();
-          this.form.neighborhood = `${data.bairro}`.toUpperCase();
-          this.form.immobile_type = data.codigotipo;
-          this.form.value =
-            data.valor.split(" ").length > 1 ? data.valor.split(" ")[1] : 0;
-          this.form.subscription_iptu = data.indiceiptu
-            ? data.indiceiptu
+          this.form.address = data.address.toUpperCase();
+          this.form.neighborhood = data.neighborhood.toUpperCase();
+          this.form.immobile_type = data.immobile_type;
+          this.form.value = data.value_rent;
+          this.form.subscription_iptu = data.index_iptu
+            ? data.index_iptu
             : null;
         })
         .catch(err => {
@@ -323,10 +322,14 @@ export default {
       );
       contractData.due_date_rent = dateFormat(contractData.due_date_rent);
       contractData.delivery_key = dateFormat(contractData.delivery_key);
-      
-      contractData.loyalty_discount = !contractData.loyalty_discount ? "n" : contractData.loyalty_discount;
+
+      contractData.loyalty_discount = !contractData.loyalty_discount
+        ? "n"
+        : contractData.loyalty_discount;
       contractData.ticket = !contractData.ticket ? "y" : contractData.ticket;
-      contractData.bank_expense = !contractData.bank_expense ? "y" : contractData.bank_expense;
+      contractData.bank_expense = !contractData.bank_expense
+        ? "y"
+        : contractData.bank_expense;
 
       this.form.contract_data = contractData;
     },
@@ -448,7 +451,10 @@ export default {
       }
     },
     "form.contract_data.date_init_contract"() {
-      this.form.contract_data.due_date_rent = moment(this.form.contract_data.date_init_contract, "DD/MM/YYYY")
+      this.form.contract_data.due_date_rent = moment(
+        this.form.contract_data.date_init_contract,
+        "DD/MM/YYYY"
+      )
         .add(1, "months")
         .format("DD/MM/YYYY");
     }

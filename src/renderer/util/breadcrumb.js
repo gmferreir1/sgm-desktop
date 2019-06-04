@@ -162,7 +162,7 @@ export default routeName => {
       }
     ];
   }
-  
+
   if (routeName === "registerSector_reserve_edit") {
     return [
       {
@@ -179,4 +179,57 @@ export default routeName => {
       }
     ];
   }
+  /** End reservas */
+
+  /**
+   * Transferencias
+   * - Transferencias no sistema
+   */
+  if (routeName === "registerSector_transfer_contract") {
+    return [
+      {
+        name: "Dashboard",
+        link: "dashboard"
+      },
+      {
+        name: "Transferências no Sistema",
+        link: "registerSector_transfer_contract"
+      }
+    ];
+  }
+
+  if (routeName === "registerSector_transfer_contract_create") {
+    return [
+      {
+        name: "Dashboard",
+        link: "dashboard"
+      },
+      {
+        name: "Transferências no Sistema",
+        link: "registerSector_transfer_contract"
+      },
+      {
+        name: "Nova Transferência",
+        link: "registerSector_transfer_contract_create"
+      }
+    ];
+  }
+  
+  if (routeName === "registerSector_transfer_contract_edit") {
+    return [
+      {
+        name: "Dashboard",
+        link: "dashboard"
+      },
+      {
+        name: "Transferências no Sistema",
+        link: "registerSector_transfer_contract"
+      },
+      {
+        name: "Edição de Transferência",
+        link: "registerSector_transfer_contract_edit"
+      }
+    ];
+  }
+  /** End transferencia */
 };
