@@ -214,7 +214,7 @@ export default routeName => {
       }
     ];
   }
-  
+
   if (routeName === "registerSector_transfer_contract_edit") {
     return [
       {
@@ -232,4 +232,40 @@ export default routeName => {
     ];
   }
   /** End transferencia */
+
+  /**
+   * Financeiro
+   * - Contratos celebrados no sistema
+   */
+  if (routeName === "finance_contract_celebrated") {
+    return [
+      {
+        name: "Dashboard",
+        link: "dashboard"
+      },
+      {
+        name: "Contratos Celebrados no Sistema",
+        link: "finance_contract_celebrated"
+      }
+    ];
+  }
+
+  if (routeName === "finance_contract_celebrated_edit") {
+    return [
+      {
+        name: "Dashboard",
+        link: "dashboard"
+      },
+      {
+        name: "Contratos Celebrados no Sistema",
+        link: "finance_contract_celebrated"
+      },
+      {
+        name: "Dados do Contrato Celebrado",
+        link: "finance_contract_celebrated_edit"
+      }
+    ];
+  }
+
+  /** Contratos celebrados */
 };

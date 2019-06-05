@@ -21,6 +21,20 @@
               </li>
             </ul>
           </li>
+          
+          <li class="treeview">
+            <a href="#" @click.prevent>
+              <img :src="icons.finance">
+              <span class="menu-title-sidebar">FINANCEIRO</span>
+            </a>
+            <ul class="treeview-menu">
+              <li>
+                <router-link :to="{name: 'finance_contract_celebrated'}">
+                  <i class="fa fa-circle-o"></i> Contratos Celebrados
+                </router-link>
+              </li>
+            </ul>
+          </li>
           <!--
           <li class="treeview">
             <a href="#" @click.prevent>
@@ -54,6 +68,7 @@ export default {
     return {
       icons: {
         folder: require("@/assets/icons/form.png"),
+        finance: require("@/assets/icons/finance.png"),
       }
     };
   }
