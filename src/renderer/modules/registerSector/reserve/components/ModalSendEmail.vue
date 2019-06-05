@@ -200,18 +200,18 @@ export default {
         .get("register-sector/reserve/query/client", queryParams)
         .then(result => {
           const data = result.data;
-          this.form.client_code = data.codigo;
-          this.form.client_name = data.nome.toUpperCase();
-          this.form.client_email = data.nome.toUpperCase();
+          this.form.client_code = data.client_code;
+          this.form.client_name = data.client_name.toUpperCase();
+          //this.form.client_email = data.nome.toUpperCase();
 
-          const email = data.email ? data.email.split(" ") : "";
+          const email = data.client_email ? data.client_email.split(" ") : "";
           if (email.length === 2) {
             this.form.client_email = email[1];
           } else {
             this.form.client_email = "";
-            _notification.error(
-              "Email do cliente informado não localizado",
-              350
+            _notification.warning(
+              "Email do cliente informado não localizado, informe manualmente",
+              500
             );
           }
         })
@@ -310,10 +310,20 @@ export default {
     "form.type_email"() {
       const reserveData = this.dataModal.reserve_data;
 
-      this.form.client_code = reserveData.owner_code;
-      this.form.client_name = reserveData.owner_name
-        ? reserveData.owner_name.toUpperCase()
-        : "";
+      if (this.form.type_email === "owner_notification_new_location") {
+        this.form.client_code = reserveData.owner_code;
+        this.form.client_name = reserveData.owner_name
+          ? reserveData.owner_name.toUpperCase()
+          : "";
+      }
+
+      if (this.form.type_email === "welcome_tenant") {
+        this.form.client_code = reserveData.tenant_code;
+        this.form.client_name = reserveData.tenant_name
+          ? reserveData.tenant_name.toUpperCase()
+          : "";
+      }
+
       this.form.reserve_id = reserveData.id;
     }
   }
