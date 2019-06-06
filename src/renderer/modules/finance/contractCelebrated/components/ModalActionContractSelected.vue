@@ -35,6 +35,33 @@
                   <span class="slider round"></span>
                 </label>
               </div>
+
+              <div class="col-md-2 div-140">
+                <p>Baixa Boleto</p>
+                <!-- Rounded switch -->
+                <label class="switch">
+                  <input type="checkbox" v-model="form.low_ticket">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <div class="col-md-2 div-180">
+                <p>Baixa TX. Intermediaçao</p>
+                <!-- Rounded switch -->
+                <label class="switch">
+                  <input type="checkbox" v-model="form.low_tx_contract">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <div class="col-md-2 div-180">
+                <p>Baixa Tar. Bancária</p>
+                <!-- Rounded switch -->
+                <label class="switch">
+                  <input type="checkbox" v-model="form.low_bank_expense">
+                  <span class="slider round"></span>
+                </label>
+              </div>
             </div>
 
             <div class="row" style="margin-top: 10px;">
@@ -82,7 +109,10 @@ export default {
       form: {
         status_general: false,
         status_iptu: false,
-        status_tcrs: false
+        status_tcrs: false,
+        low_ticket: false,
+        low_tx_contract: false,
+        low_bank_expense: false
       }
     };
   },
@@ -142,6 +172,106 @@ export default {
         this.form.status_general = true;
       }
       if (!this.form.status_iptu || !this.form.status_tcrs) {
+        this.form.status_general = false;
+      }
+    },
+    "form.status_iptu"() {
+      if (
+        this.form.status_iptu &&
+        this.form.status_tcrs &&
+        this.form.low_ticket &&
+        this.form.low_tx_contract &&
+        this.form.low_bank_expense
+      ) {
+        this.form.status_general = true;
+      }
+      if (
+        !this.form.status_iptu ||
+        !this.form.status_tcrs ||
+        !this.form.low_ticket ||
+        !this.form.low_tx_contract ||
+        !this.form.low_bank_expense
+      ) {
+        this.form.status_general = false;
+      }
+    },
+    "form.status_tcrs"() {
+      if (
+        this.form.status_iptu &&
+        this.form.status_tcrs &&
+        this.form.low_ticket &&
+        this.form.low_tx_contract &&
+        this.form.low_bank_expense
+      ) {
+        this.form.status_general = true;
+      }
+      if (
+        !this.form.status_iptu ||
+        !this.form.status_tcrs ||
+        !this.form.low_ticket ||
+        !this.form.low_tx_contract ||
+        !this.form.low_bank_expense
+      ) {
+        this.form.status_general = false;
+      }
+    },
+    "form.low_ticket"() {
+      if (
+        this.form.status_iptu &&
+        this.form.status_tcrs &&
+        this.form.low_ticket &&
+        this.form.low_tx_contract &&
+        this.form.low_bank_expense
+      ) {
+        this.form.status_general = true;
+      }
+      if (
+        !this.form.status_iptu ||
+        !this.form.status_tcrs ||
+        !this.form.low_ticket ||
+        !this.form.low_tx_contract ||
+        !this.form.low_bank_expense
+      ) {
+        this.form.status_general = false;
+      }
+    },
+    "form.low_tx_contract"() {
+      if (
+        this.form.status_iptu &&
+        this.form.status_tcrs &&
+        this.form.low_ticket &&
+        this.form.low_tx_contract &&
+        this.form.low_bank_expense
+      ) {
+        this.form.status_general = true;
+      }
+      if (
+        !this.form.status_iptu ||
+        !this.form.status_tcrs ||
+        !this.form.low_ticket ||
+        !this.form.low_tx_contract ||
+        !this.form.low_bank_expense
+      ) {
+        this.form.status_general = false;
+      }
+    },
+    "form.low_bank_expense"() {
+      if (
+        this.form.status_iptu &&
+        this.form.status_tcrs &&
+        this.form.low_ticket &&
+        this.form.low_tx_contract &&
+        this.form.low_bank_expense
+      ) {
+        this.form.status_general = true;
+      }
+      if (
+        !this.form.status_iptu ||
+        !this.form.status_tcrs ||
+        !this.form.low_ticket ||
+        !this.form.low_tx_contract ||
+        !this.form.low_bank_expense
+      ) {
         this.form.status_general = false;
       }
     }
