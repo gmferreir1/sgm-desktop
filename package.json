@@ -66,7 +66,7 @@
     "chart.js": "1.0.*",
     "ckeditor": "^4.7.0",
     "collect.js": "^4.0.28",
-    "datatables.net": "^1.10.15",
+    "datatables.net": "^1.10.22",
     "datatables.net-bs": "^1.10.15",
     "electron-dl": "^1.14.0",
     "electron-log": "^3.0.5",
