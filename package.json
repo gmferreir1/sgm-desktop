@@ -63,7 +63,7 @@
     "bootstrap-multiselect": "^0.9.13-1",
     "bootstrap-slider": "^9.8.0",
     "bootstrap-timepicker": "^0.5.2",
-    "chart.js": "1.0.*",
+    "chart.js": "2.9.*",
     "ckeditor": "^4.7.0",
     "collect.js": "^4.0.28",
     "datatables.net": "^1.10.15",
